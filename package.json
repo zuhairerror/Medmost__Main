@@ -1,0 +1,20 @@
+{
+  "name": "medmost",
+  "version": "1.0.0",
+  "description": "MEDMOST - World-Class Medical Treatment in India",
+  "main": "api/consultation.js",
+  "scripts": {
+    "start": "node api/consultation.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1"
+  },
+  "keywords": [
+    "medical-tourism",
+    "healthcare",
+    "india",
+    "medmost"
+  ],
+  "author": "MEDMOST",
+  "license": "ISC"
+}
