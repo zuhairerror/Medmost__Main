@@ -1,17 +1,49 @@
 /**
- * MEDMOST - Supabase Client & Backend API Integration
- * Prepared for Vercel Serverless & Supabase Database / Storage
+ * MEDMOST - Supabase Client & Authentication Integration
+ * Fully integrated with Supabase Auth, Row Level Security, and Consultations.
  */
 
 (function(window) {
+  // Default project credentials (can be overridden by environment or localStorage)
   const DEFAULT_URL = 'https://cyycbbzscvdojmdelutm.supabase.co';
-  const DEFAULT_KEY = 'sb_publishable_MF5iX5x0Ts7E_DVS1AEuFw_Ph1kkzXf';
+  const DEFAULT_ANON_KEY = 'sb_publishable_MF5iX5x0Ts7E_DVS1AEuFw_Ph1kkzXf';
 
   const config = {
     url: (window.__MEDMOST_SUPABASE_URL__ || localStorage.getItem('MEDMOST_SUPABASE_URL') || DEFAULT_URL).trim(),
-    key: (window.__MEDMOST_SUPABASE_KEY__ || localStorage.getItem('MEDMOST_SUPABASE_KEY') || DEFAULT_KEY).trim(),
-    isConfigured: true
+    key: (window.__MEDMOST_SUPABASE_KEY__ || localStorage.getItem('MEDMOST_SUPABASE_KEY') || DEFAULT_ANON_KEY).trim()
   };
+
+  // Initialize official Supabase client if SDK is loaded
+  let supabaseClient = null;
+  try {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(config.url, config.key, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+      console.log('✅ [MEDMOST] Supabase client initialized successfully:', config.url);
+    } else {
+      console.warn('⚠️ [MEDMOST] window.supabase not detected yet. SDK will initialize on load.');
+    }
+  } catch (err) {
+    console.error('❌ [MEDMOST] Error initializing Supabase client:', err);
+  }
+
+  function getClient() {
+    if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(config.url, config.key, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+    }
+    return supabaseClient;
+  }
 
   const MedMostBackend = {
     getConfig: function() {
@@ -22,14 +54,135 @@
       };
     },
 
+    getClient: getClient,
+
+    // ========================================================================
+    // AUTHENTICATION METHODS
+    // ========================================================================
+
     /**
-     * Submit a patient consultation / enquiry.
-     * 1. Attempts POST to /api/consultation (Vercel Serverless Function)
-     * 2. If running locally without Vercel server or offline, persists locally in localStorage
-     * 3. Always guarantees zero data loss and returns a formal Enquiry ID.
+     * Sign up a new patient with email, password, and optional full name.
+     */
+    signUp: async function(email, password, fullName) {
+      const client = getClient();
+      if (!client) {
+        throw new Error('Supabase SDK not loaded. Please check your internet connection.');
+      }
+
+      const { data, error } = await client.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          data: {
+            full_name: (fullName || '').trim()
+          }
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+
+    /**
+     * Log in an existing patient with email and password.
+     */
+    signIn: async function(email, password) {
+      const client = getClient();
+      if (!client) {
+        throw new Error('Supabase SDK not loaded. Please check your internet connection.');
+      }
+
+      const { data, error } = await client.auth.signInWithPassword({
+        email: email.trim(),
+        password: password
+      });
+
+      if (error) throw error;
+      return data;
+    },
+
+    /**
+     * Log out current user and clear local session state.
+     */
+    signOut: async function() {
+      const client = getClient();
+      if (client) {
+        try {
+          await client.auth.signOut();
+        } catch (e) {
+          console.warn('Supabase signOut warning:', e);
+        }
+      }
+      localStorage.removeItem('medmost_current_user');
+      return { success: true };
+    },
+
+    /**
+     * Send password reset email
+     */
+    resetPassword: async function(email) {
+      const client = getClient();
+      if (!client) throw new Error('Supabase client unavailable.');
+      const { data, error } = await client.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: window.location.origin
+      });
+      if (error) throw error;
+      return data;
+    },
+
+    /**
+     * Get the currently logged in user (from session or cached state)
+     */
+    getCurrentUser: async function() {
+      const client = getClient();
+      if (!client) {
+        const cached = localStorage.getItem('medmost_current_user');
+        return cached ? JSON.parse(cached) : null;
+      }
+
+      try {
+        const { data: { session } } = await client.auth.getSession();
+        if (session && session.user) {
+          localStorage.setItem('medmost_current_user', JSON.stringify(session.user));
+          return session.user;
+        }
+      } catch (e) {
+        console.warn('Error reading session:', e);
+      }
+      return null;
+    },
+
+    /**
+     * Listen for authentication state changes (SIGNED_IN, SIGNED_OUT, etc.)
+     */
+    onAuthStateChange: function(callback) {
+      const client = getClient();
+      if (!client) return { unsubscribe: function() {} };
+      const { data: { subscription } } = client.auth.onAuthStateChange(function(event, session) {
+        if (session && session.user) {
+          localStorage.setItem('medmost_current_user', JSON.stringify(session.user));
+        } else if (event === 'SIGNED_OUT') {
+          localStorage.removeItem('medmost_current_user');
+        }
+        if (typeof callback === 'function') {
+          callback(event, session);
+        }
+      });
+      return subscription;
+    },
+
+    // ========================================================================
+    // CONSULTATION / ENQUIRY METHODS
+    // ========================================================================
+
+    /**
+     * Submit a consultation / enquiry.
+     * Links authenticated user's ID and email, saves to Supabase and local cache.
      */
     submitEnquiry: async function(enquiryData) {
       const referenceId = 'MM-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000);
+      const user = await this.getCurrentUser();
+
       const payload = {
         reference_id: referenceId,
         created_at: new Date().toISOString(),
@@ -42,30 +195,57 @@
         message: enquiryData.message || '',
         consent: Boolean(enquiryData.consent),
         documents: enquiryData.documents || [],
-        status: 'pending_review'
+        status: 'pending_review',
+        user_id: user ? user.id : null
       };
 
       let serverSuccess = false;
-      let serverResponse = null;
+      const client = getClient();
 
-      // 1. Try serverless API endpoint
-      try {
-        const response = await fetch('/api/consultation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+      // 1. If Supabase client is available, insert into public.consultations table
+      if (client) {
+        try {
+          const { data, error } = await client
+            .from('consultations')
+            .insert([{
+              name: payload.name,
+              email: payload.email,
+              phone: payload.phone,
+              country: payload.country,
+              message: `[Ref: ${referenceId}] [Treatment: ${payload.treatment}] [Hospital: ${payload.hospital}] ${payload.message}`.trim(),
+              user_id: payload.user_id
+            }]);
 
-        if (response.ok) {
-          serverResponse = await response.json();
-          serverSuccess = true;
-          payload.status = 'synced_to_server';
+          if (!error) {
+            serverSuccess = true;
+            payload.status = 'synced_to_supabase';
+            console.log('✅ Consultation saved directly to Supabase table:', referenceId);
+          } else {
+            console.warn('Supabase table insert notice (RLS policy check):', error.message);
+          }
+        } catch (dbErr) {
+          console.warn('Direct Supabase insert attempt note:', dbErr);
         }
-      } catch (err) {
-        console.warn('API /api/consultation unreachable (offline or local static mode). Saving enquiry to verified local persistence.', err);
       }
 
-      // 2. Always persist locally for redundancy and offline tracking
+      // 2. Try serverless endpoint (/api/consultation) if deployed
+      if (!serverSuccess) {
+        try {
+          const response = await fetch('/api/consultation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (response.ok) {
+            serverSuccess = true;
+            payload.status = 'synced_to_server';
+          }
+        } catch (err) {
+          // Normal when running locally as file://
+        }
+      }
+
+      // 3. Always store in local storage for zero data loss & offline review
       try {
         const existing = JSON.parse(localStorage.getItem('medmost_enquiries') || '[]');
         existing.unshift(payload);
@@ -83,35 +263,45 @@
     },
 
     /**
-     * Retrieve stored enquiries for patient status tracking
+     * Retrieve consultations for the current user (from Supabase or local storage)
      */
-    getPatientEnquiries: function(email) {
-      try {
-        const all = JSON.parse(localStorage.getItem('medmost_enquiries') || '[]');
-        if (!email) return all;
-        return all.filter(e => e.email.toLowerCase() === email.toLowerCase());
-      } catch (e) {
-        return [];
-      }
-    },
+    getUserConsultations: async function() {
+      const user = await this.getCurrentUser();
+      const client = getClient();
+      let consultations = [];
 
-    /**
-     * Stub for secure document upload to Supabase Storage bucket 'patient-documents'
-     */
-    uploadDocument: async function(file, referenceId) {
-      console.log(`[Supabase Storage Ready] Preparing upload for: ${file.name} (Ref: ${referenceId})`);
-      // Simulates document registration for frontend UX
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            uploaded_at: new Date().toISOString(),
-            status: 'staged_for_upload'
+      if (client && user) {
+        try {
+          // Select user's own consultations via Supabase RLS
+          const { data, error } = await client
+            .from('consultations')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (!error && Array.isArray(data) && data.length > 0) {
+            consultations = data;
+          }
+        } catch (e) {
+          console.warn('Supabase query note:', e);
+        }
+      }
+
+      // Merge with local enquiries for complete continuity
+      try {
+        const local = JSON.parse(localStorage.getItem('medmost_enquiries') || '[]');
+        if (user && user.email) {
+          const matchedLocal = local.filter(l => l.email && l.email.toLowerCase() === user.email.toLowerCase());
+          matchedLocal.forEach(item => {
+            if (!consultations.some(c => c.reference_id === item.reference_id || (c.created_at && c.created_at === item.created_at))) {
+              consultations.push(item);
+            }
           });
-        }, 600);
-      });
+        } else if (consultations.length === 0) {
+          consultations = local;
+        }
+      } catch (e) {}
+
+      return consultations;
     }
   };
 
