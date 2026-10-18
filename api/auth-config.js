@@ -5,8 +5,8 @@
  * Never exposes service_role key or database secrets!
  */
 
-const DEFAULT_SUPABASE_URL = 'https://cyycbbzscvdojmdelutm.supabase.co';
-const DEFAULT_ANON_KEY = 'sb_publishable_MF5iX5x0Ts7E_DVS1AEuFw_Ph1kkzXf';
+const DEFAULT_SUPABASE_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
+const DEFAULT_ANON_KEY = '';
 
 /**
  * Normalizes the Supabase URL to ensure it is the clean origin ending in .supabase.co

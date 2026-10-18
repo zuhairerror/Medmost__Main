@@ -7,7 +7,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
 // Default project URL from user's Supabase dashboard
-const DEFAULT_SUPABASE_URL = 'https://cyycbbzscvdojmdelutm.supabase.co';
+const DEFAULT_SUPABASE_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
 
 /**
  * Normalizes and validates the Supabase Project URL.

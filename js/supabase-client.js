@@ -4,19 +4,23 @@
  */
 
 (function(window) {
-  // Default project credentials (can be overridden by environment or localStorage)
-  const DEFAULT_URL = 'https://cyycbbzscvdojmdelutm.supabase.co';
-  const DEFAULT_ANON_KEY = 'sb_publishable_MF5iX5x0Ts7E_DVS1AEuFw_Ph1kkzXf';
+  // Default project credentials (can be overridden by window.__MEDMOST_SUPABASE_KEY__ or localStorage)
+  const DEFAULT_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
+  const DEFAULT_ANON_KEY = 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
 
   const config = {
     url: (window.__MEDMOST_SUPABASE_URL__ || localStorage.getItem('MEDMOST_SUPABASE_URL') || DEFAULT_URL).trim(),
     key: (window.__MEDMOST_SUPABASE_KEY__ || localStorage.getItem('MEDMOST_SUPABASE_KEY') || DEFAULT_ANON_KEY).trim()
   };
 
-  // Initialize official Supabase client if SDK is loaded
+  function isKeyConfigured(k) {
+    return Boolean(k && typeof k === 'string' && !k.startsWith('YOUR_') && k.length > 20);
+  }
+
+  // Initialize official Supabase client if SDK is loaded and key is set
   let supabaseClient = null;
   try {
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
+    if (window.supabase && typeof window.supabase.createClient === 'function' && isKeyConfigured(config.key)) {
       supabaseClient = window.supabase.createClient(config.url, config.key, {
         auth: {
           persistSession: true,
@@ -25,22 +29,26 @@
         }
       });
       console.log('✅ [MEDMOST] Supabase client initialized successfully:', config.url);
-    } else {
-      console.warn('⚠️ [MEDMOST] window.supabase not detected yet. SDK will initialize on load.');
+    } else if (!isKeyConfigured(config.key)) {
+      console.info('ℹ️ [MEDMOST] Supabase client awaiting Publishable / Anon Key in js/supabase-client.js.');
     }
   } catch (err) {
     console.error('❌ [MEDMOST] Error initializing Supabase client:', err);
   }
 
   function getClient() {
-    if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
-      supabaseClient = window.supabase.createClient(config.url, config.key, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
-      });
+    if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function' && isKeyConfigured(config.key)) {
+      try {
+        supabaseClient = window.supabase.createClient(config.url, config.key, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        });
+      } catch (e) {
+        console.error('❌ [MEDMOST] getClient initialization error:', e);
+      }
     }
     return supabaseClient;
   }
