@@ -78,8 +78,7 @@ body.russian .cost-header-col.ru {
   display: block !important;
 }
 .visual-band{width:100%;display:block;border-radius:18px;box-shadow:0 12px 30px #062b4b18;margin:22px 0 30px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{border:1px solid var(--line);border-radius:15px;padding:20px;background:#fff}.card h3{margin:6px 0;color:var(--navy);font-size:17px}.card p{margin:0;color:var(--muted);font-size:14px}.icon{font-size:30px}.soft{background:var(--cream)}.spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.spec{border-radius:13px;background:#fff;border:1px solid var(--line);overflow:hidden}.spec img{width:100%;height:105px;object-fit:cover;display:block}.spec div{padding:12px;font-weight:850;color:var(--navy);font-size:14px}.price-wrap{overflow:auto;border-radius:13px;border:1px solid var(--line)}table{border-collapse:collapse;min-width:690px;width:100%;font-size:13px;background:white}th,td{padding:12px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--navy);color:white}tbody tr:nth-child(even){background:#f5f9fb}.hospital-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.hospital{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:white}.hospital img{width:100%;height:95px;object-fit:cover;display:block}.hospital strong{display:block;padding:10px 12px;color:var(--navy);font-size:14px}.hospital span{display:block;padding:0 12px 12px;color:var(--teal);font-size:12px;font-weight:800}.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.service{display:flex;gap:12px;padding:17px;border:1px solid var(--line);border-radius:13px;background:white}.service b{font-size:25px}.service h3{margin:0 0 4px;color:var(--navy);font-size:16px}.service p{margin:0;color:var(--muted);font-size:13px}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px}.num{font-size:24px;font-weight:950;color:var(--blue)}.step h3{font-size:14px;line-height:1.25;color:var(--navy);margin:5px 0}.step p{font-size:12px;color:var(--muted);margin:0}.cta{background:linear-gradient(120deg,#062b4b,#075b70);color:white}.cta-row{display:flex;justify-content:space-between;align-items:center;gap:24px}.cta h2{color:white;max-width:740px}.cta p{color:#d8e8ef;max-width:700px}.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.contact{padding:20px;border:1px solid var(--line);border-radius:14px}.contact h3{color:var(--navy);margin-top:0}.note{font-size:12px;color:var(--muted);margin-top:14px}footer{background:#041f37;color:#d9e6ed;padding:22px 0;font-size:12px}.foot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
-@media(max-width:800px){.hero-image{height:470px;object-position:62% center}.hero-overlay{background:linear-gradient(90deg,rgba(3,36,65,.82),rgba(3,36,65,.38))}.pillar-grid{grid-template-columns:repeat(2,1fr)}.grid,.service-grid{grid-template-columns:repeat(2,1fr)}.spec-grid{grid-template-columns:repeat(3,1fr)}.hospital-grid{grid-template-columns:repeat(3,1fr)}.steps{grid-template-columns:repeat(3,1fr)}.cta-row{align-items:flex-start;flex-direction:column}}
-@media(max-width:520px){.top{align-items:center}.brand-logo{width:min(245px,60vw)}.hero-image{height:520px;object-position:60% center}.hero-overlay{background:linear-gradient(90deg,rgba(3,36,65,.88),rgba(3,36,65,.48))}.hero-copy{padding:28px 0}.hero p{font-size:16px}section{padding:42px 0}.grid,.service-grid,.contact-grid{grid-template-columns:1fr}.spec-grid{grid-template-columns:repeat(2,1fr)}.hospital-grid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:repeat(2,1fr)}.pillar{font-size:12px}.visual-band{border-radius:10px}}
+/* Responsive styles unified in master responsive block below */
 
 .spec{cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
 .spec:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(6,43,75,.12)}
@@ -105,7 +104,7 @@ body.russian .cost-header-col.ru {
 .modal-proc-list li::before{content:"✓";color:var(--teal);font-weight:900}
 .form-group{margin-bottom:14px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:520px){.form-row{grid-template-columns:1fr}}
+
 .form-label{display:block;font-size:13px;font-weight:750;color:var(--navy);margin-bottom:5px}
 .form-input,.form-select,.form-textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;color:var(--ink);outline:none;background:#fff;font-family:inherit}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(8,120,189,.12)}
@@ -397,23 +396,7 @@ body.russian .cost-header-col.ru {
   margin-bottom: 0;
 }
 
-@media (max-width: 860px) {
-  .cost-poster-header {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .cost-poster-header::after {
-    display: none;
-  }
-  .cost-features-bar {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-@media (max-width: 520px) {
-  .cost-features-bar {
-    grid-template-columns: 1fr;
-  }
-}
+/* Cost poster responsive rules unified below */
 
 
 
@@ -639,12 +622,7 @@ body.russian .cost-header-col.ru {
   color: #062b4b;
 }
 
-@media (max-width: 960px) {
-  .why-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-}
+/* Why India responsive rules unified below */
 
 
 /* ==========================================================================
@@ -1050,18 +1028,7 @@ a.channel-value:hover {
   font-weight: 600;
 }
 
-@media (max-width: 900px) {
-  .cta-pro-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .cta-pro-actions {
-    width: 100%;
-  }
-  .contact-guidance-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* CTA & contact responsive rules unified below */
 
 
 /* ==========================================================================
@@ -1243,15 +1210,439 @@ a.channel-value:hover {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   COMPREHENSIVE RESPONSIVE DESIGN SYSTEM (PHONES, TABLETS & DESKTOPS)
+   ========================================================================== */
+
+/* Universal mobile-friendly reset */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Cost table swipe indicator */
+.cost-table-hint {
+  display: none;
+  background: #f0f7fb;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 750;
+  padding: 8px 14px;
+  border-bottom: 1px solid #bae6fd;
+  text-align: center;
+  letter-spacing: .02em;
+}
+
+/* --------------------------------------------------------------------------
+   1. LAPTOPS & LARGE TABLETS (max-width: 1024px)
+   -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
+  .spec-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .hospital-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
   .support-grid-pro {
     grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
   }
 }
 
+/* --------------------------------------------------------------------------
+   2. TABLETS & COMPACT LAPTOPS (max-width: 860px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .top {
+    gap: 12px;
+  }
+  .brand-logo {
+    width: min(240px, 54vw);
+  }
+  
+  .hero-image {
+    height: 460px;
+    object-position: 60% center;
+  }
+  .hero-overlay {
+    background: linear-gradient(90deg, rgba(3,36,65,.92) 0%, rgba(3,36,65,.68) 55%, rgba(3,36,65,.32) 100%);
+  }
+  .hero-copy {
+    max-width: 480px;
+    padding: 30px 0;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 4.2vw, 42px);
+  }
+
+  .pillar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 18px 0;
+  }
+
+  .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .why-grid > :last-child:nth-child(odd) {
+    grid-column: span 2;
+  }
+
+  .cta-banner-pro {
+    padding: 34px 26px;
+    border-radius: 18px;
+  }
+  .cta-pro-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+  }
+  .cta-pro-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 20px;
+    font-size: 14.5px;
+  }
+
+  .contact-guidance-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .contact-card-pro {
+    padding: 24px 20px;
+  }
+  .contact-direct-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. SMALL TABLETS & LARGE SMARTPHONES (max-width: 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Cost Comparison Table: Sticky Procedure Column & Scroll Hint */
+  .cost-table-hint {
+    display: block;
+  }
+  .cost-poster-card {
+    border-radius: 14px;
+    margin: 18px auto 12px;
+    border-width: 1.5px;
+  }
+  .cost-poster-header {
+    padding: 20px 18px 16px;
+  }
+  .cost-brand-title {
+    font-size: 17px;
+  }
+  .cost-main-title {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+  .cost-badge-sub {
+    font-size: 11.5px;
+    padding: 3px 9px;
+  }
+  .cost-desc-p {
+    font-size: 12px;
+  }
+
+  .cost-comparison-tbl {
+    min-width: 660px;
+  }
+  .cost-comparison-tbl thead th.th-proc,
+  .proc-cell {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    box-shadow: 3px 0 8px rgba(6, 43, 75, 0.12);
+  }
+  .cost-comparison-tbl thead th.th-proc {
+    z-index: 4;
+    background: #062b4b;
+  }
+  .proc-cell {
+    background: #ffffff;
+  }
+  .cost-proc-row:hover .proc-cell {
+    background: #f1f8fc !important;
+  }
+
+  .th-proc-en { font-size: 12px; }
+  .th-proc-ru { font-size: 10.5px; }
+  .proc-thumb { width: 34px; height: 34px; border-radius: 6px; }
+  .proc-en-name, .proc-ru-name { font-size: 13px; }
+  .proc-en-sub, .proc-ru-sub { font-size: 10.5px; }
+  .price-val { font-size: 13px; }
+
+  .cost-features-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+  .cost-feature-item {
+    font-size: 12px;
+  }
+
+  .cost-poster-footer {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 16px;
+    align-items: stretch;
+    text-align: center;
+  }
+  .cost-contact-pill {
+    width: 100%;
+    justify-content: center;
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. STANDARD SMARTPHONES (max-width: 640px)
+   -------------------------------------------------------------------------- */
 @media (max-width: 640px) {
+  .wrap {
+    width: 92%;
+    padding: 0 4px;
+  }
+  section {
+    padding: 40px 0;
+  }
+
+  .top {
+    padding: 10px 0;
+    gap: 8px;
+  }
+  .brand-logo {
+    width: min(180px, 50vw);
+    max-height: 44px;
+  }
+  .langs {
+    gap: 4px;
+  }
+  .lang {
+    padding: 6px 11px;
+    font-size: 13px;
+    min-height: 38px;
+    min-width: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Hero on mobile */
+  .hero {
+    min-height: auto;
+  }
+  .hero-image {
+    height: 430px;
+    object-position: 65% center;
+  }
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(3,36,65,.93) 0%, rgba(3,36,65,.76) 55%, rgba(3,36,65,.93) 100%);
+    align-items: center;
+  }
+  .hero-copy {
+    padding: 24px 0;
+    max-width: 100%;
+  }
+  .hero h1 {
+    font-size: clamp(25px, 6.8vw, 34px);
+    line-height: 1.15;
+    margin: 8px 0 12px;
+  }
+  .hero p {
+    font-size: 14.5px;
+    margin-bottom: 18px;
+  }
+  .btn {
+    width: 100%;
+    max-width: 320px;
+    padding: 13px 20px;
+    font-size: 14.5px;
+  }
+
+  /* Pillars */
+  .pillar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 8px;
+    padding: 16px 0;
+  }
+  .pillar {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .pillar b {
+    font-size: 20px;
+  }
+
+  /* Why choose India */
+  .why-section {
+    padding: 40px 0 32px;
+  }
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .why-grid > :last-child:nth-child(odd) {
+    grid-column: span 1;
+  }
+  .why-card-pro {
+    padding: 22px 18px 20px;
+    border-radius: 16px;
+  }
+  .why-title {
+    font-size: 18px;
+  }
+  .why-desc {
+    font-size: 13.5px;
+  }
+
+  /* Specialties */
+  .spec-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .spec img {
+    height: 95px;
+  }
+  .spec div {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  /* Hospitals: clean horizontal medical card on mobile */
+  .hospital-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .hospital {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 14px;
+  }
+  .hospital img {
+    width: 88px;
+    height: 70px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  .hospital strong {
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+  .hospital span {
+    padding: 3px 0 0;
+    font-size: 12px;
+  }
+
+  /* Support Concierge */
+  .support-section-wrap {
+    padding: 40px 0 32px;
+  }
   .support-grid-pro {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .support-card-pro {
+    padding: 22px 18px 20px;
+    border-radius: 16px;
+  }
+  .support-card-title {
+    font-size: 17px;
+  }
+  .support-card-desc {
+    font-size: 13.5px;
+  }
+  .support-step-watermark {
+    font-size: 58px;
+    right: 12px;
+    bottom: 8px;
+    opacity: 0.1;
+  }
+
+  /* Modals */
+  .modal-backdrop {
+    padding: 10px;
+  }
+  .modal-card {
+    max-height: 94vh;
+    border-radius: 14px;
+  }
+  .modal-header {
+    padding: 14px 16px;
+  }
+  .modal-header h3 {
+    font-size: 17px;
+  }
+  .modal-body {
+    padding: 16px;
+  }
+  .modal-img-banner {
+    height: 150px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .form-input, .form-select, .form-textarea {
+    font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+    padding: 11px 12px;
+  }
+
+  /* Footer */
+  footer {
+    padding: 20px 0;
+  }
+  .foot {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. COMPACT SMARTPHONES (max-width: 380px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 380px) {
+  .brand-logo {
+    width: 155px;
+  }
+  .hero h1 {
+    font-size: 23px;
+  }
+  .pillar-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .hospital img {
+    width: 76px;
+    height: 64px;
+  }
+  .spec-grid {
+    gap: 8px;
+  }
+  .spec div {
+    font-size: 12px;
+    padding: 8px 6px;
   }
 }
 
@@ -1432,6 +1823,10 @@ a.channel-value:hover {
     </div>
 
     <!-- COMPARISON TABLE -->
+    <div class="cost-table-hint">
+      <span class="en">⇄ Swipe horizontally to compare prices</span>
+      <span class="ru">⇄ Прокрутите вправо для сравнения цен</span>
+    </div>
     <div class="cost-table-scroll">
       <table class="cost-comparison-tbl">
         <thead>
