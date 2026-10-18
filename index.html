@@ -5,11 +5,79 @@
 <meta name="theme-color" content="#062b4b">
 <meta name="description" content="MEDMOST — medical tourism to India. English and Russian information about treatments, hospitals and patient support.">
 <title>MEDMOST | Medical Tourism to India</title>
+<script>
+(function() {
+  try {
+    var l = localStorage.getItem('medmost_selected_language');
+    if (l === 'ru') {
+      document.documentElement.lang = 'ru';
+      document.documentElement.classList.add('preload-russian');
+    }
+  } catch(e) {}
+})();
+</script>
 <style>
 :root{--navy:#062b4b;--blue:#0878bd;--teal:#008b78;--gold:#d8ad56;--cream:#fbf8f0;--ink:#18344b;--muted:#5d7181;--line:#e4e9ed}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}.wrap{width:min(1180px,94%);margin:auto}
 header{background:#fff;border-bottom:3px solid var(--gold)}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0}.brand-logo{width:min(330px,64vw);height:auto;display:block;object-fit:contain}.langs{display:flex;gap:6px;flex-shrink:0}.lang{border:1px solid #ccd9e2;background:#fff;color:var(--navy);border-radius:99px;padding:8px 14px;font-weight:850;cursor:pointer}.lang.active{background:var(--navy);color:#fff}
-.hero{position:relative;min-height:440px;background:#eaf5fa;overflow:hidden}.hero-image{width:100%;height:clamp(360px,48vw,590px);object-fit:cover;object-position:center;display:block}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,36,65,.82),rgba(3,36,65,.45) 42%,rgba(3,36,65,0) 75%);display:flex;align-items:center}.hero-copy{color:#fff;max-width:510px;padding:36px 0}.hero h1{font-size:clamp(32px,4.5vw,56px);line-height:1.04;margin:10px 0 16px;letter-spacing:-.03em}.hero p{font-size:18px;max-width:470px;color:#f0f6f9}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:900;color:#f0ce82}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--teal);color:white;text-decoration:none;font-weight:900;border-radius:999px;padding:15px 22px;box-shadow:0 7px 22px #001d3030}.btn:hover{background:#006c60}.pillars{background:var(--navy);color:white}.pillar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 0}.pillar{display:flex;align-items:center;gap:12px;font-weight:800;font-size:14px}.pillar b{font-size:26px;color:var(--gold)}section{padding:58px 0}.section-head{max-width:800px;margin-bottom:26px}h2{font-size:clamp(27px,3.2vw,40px);line-height:1.12;color:var(--navy);margin:7px 0 12px}.section-head p{color:var(--muted);margin:0}.en,.ru{}.ru{display:none}body.russian .en{display:none!important}body.russian .ru{display:initial}body.russian p.ru,body.russian h1.ru,body.russian h2.ru,body.russian h3.ru,body.russian div.ru{display:block}.visual-band{width:100%;display:block;border-radius:18px;box-shadow:0 12px 30px #062b4b18;margin:22px 0 30px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{border:1px solid var(--line);border-radius:15px;padding:20px;background:#fff}.card h3{margin:6px 0;color:var(--navy);font-size:17px}.card p{margin:0;color:var(--muted);font-size:14px}.icon{font-size:30px}.soft{background:var(--cream)}.spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.spec{border-radius:13px;background:#fff;border:1px solid var(--line);overflow:hidden}.spec img{width:100%;height:105px;object-fit:cover;display:block}.spec div{padding:12px;font-weight:850;color:var(--navy);font-size:14px}.price-wrap{overflow:auto;border-radius:13px;border:1px solid var(--line)}table{border-collapse:collapse;min-width:690px;width:100%;font-size:13px;background:white}th,td{padding:12px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--navy);color:white}tbody tr:nth-child(even){background:#f5f9fb}.hospital-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.hospital{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:white}.hospital img{width:100%;height:95px;object-fit:cover;display:block}.hospital strong{display:block;padding:10px 12px;color:var(--navy);font-size:14px}.hospital span{display:block;padding:0 12px 12px;color:var(--teal);font-size:12px;font-weight:800}.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.service{display:flex;gap:12px;padding:17px;border:1px solid var(--line);border-radius:13px;background:white}.service b{font-size:25px}.service h3{margin:0 0 4px;color:var(--navy);font-size:16px}.service p{margin:0;color:var(--muted);font-size:13px}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px}.num{font-size:24px;font-weight:950;color:var(--blue)}.step h3{font-size:14px;line-height:1.25;color:var(--navy);margin:5px 0}.step p{font-size:12px;color:var(--muted);margin:0}.cta{background:linear-gradient(120deg,#062b4b,#075b70);color:white}.cta-row{display:flex;justify-content:space-between;align-items:center;gap:24px}.cta h2{color:white;max-width:740px}.cta p{color:#d8e8ef;max-width:700px}.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.contact{padding:20px;border:1px solid var(--line);border-radius:14px}.contact h3{color:var(--navy);margin-top:0}.note{font-size:12px;color:var(--muted);margin-top:14px}footer{background:#041f37;color:#d9e6ed;padding:22px 0;font-size:12px}.foot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.hero{position:relative;min-height:440px;background:#eaf5fa;overflow:hidden}.hero-image{width:100%;height:clamp(360px,48vw,590px);object-fit:cover;object-position:center;display:block}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,36,65,.82),rgba(3,36,65,.45) 42%,rgba(3,36,65,0) 75%);display:flex;align-items:center}.hero-copy{color:#fff;max-width:510px;padding:36px 0}.hero h1{font-size:clamp(32px,4.5vw,56px);line-height:1.04;margin:10px 0 16px;letter-spacing:-.03em}.hero p{font-size:18px;max-width:470px;color:#f0f6f9}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:900;color:#f0ce82}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--teal);color:white;text-decoration:none;font-weight:900;border-radius:999px;padding:15px 22px;box-shadow:0 7px 22px #001d3030}.btn:hover{background:#006c60}.pillars{background:var(--navy);color:white}.pillar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 0}.pillar{display:flex;align-items:center;gap:12px;font-weight:800;font-size:14px}.pillar b{font-size:26px;color:var(--gold)}section{padding:58px 0}.section-head{max-width:800px;margin-bottom:26px}h2{font-size:clamp(27px,3.2vw,40px);line-height:1.12;color:var(--navy);margin:7px 0 12px}.section-head p{color:var(--muted);margin:0}
+/* ==========================================================================
+   STRICT LANGUAGE SWITCHING SYSTEM (NO MIXED CONTENT)
+   ========================================================================== */
+.ru {
+  display: none !important;
+}
+.en {
+  display: initial;
+}
+
+body.russian .en,
+html.preload-russian .en {
+  display: none !important;
+}
+
+body.russian .ru,
+html.preload-russian .ru {
+  display: initial !important;
+}
+
+body.russian p.ru,
+body.russian h1.ru,
+body.russian h2.ru,
+body.russian h3.ru,
+body.russian h4.ru,
+body.russian div.ru,
+body.russian ul.ru,
+body.russian li.ru {
+  display: block !important;
+}
+
+body.russian span.ru,
+body.russian strong.ru,
+body.russian b.ru,
+body.russian em.ru,
+body.russian a.ru {
+  display: inline !important;
+}
+
+body.russian .cta-pro-pill.ru,
+body.russian .why-tag.ru,
+body.russian .support-step-badge.ru,
+body.russian .pro-badge-status.ru,
+body.russian .pro-badge-advisory.ru,
+body.russian .cta-mini-badge.ru,
+body.russian .cost-badge-sub.ru,
+body.russian .cost-badge-cta.ru,
+body.russian .cost-contact-pill.ru,
+body.russian .section-pill.ru,
+body.russian .support-pill-tag.ru {
+  display: inline-flex !important;
+}
+
+body.russian .cost-header-col.ru {
+  display: block !important;
+}
+.visual-band{width:100%;display:block;border-radius:18px;box-shadow:0 12px 30px #062b4b18;margin:22px 0 30px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{border:1px solid var(--line);border-radius:15px;padding:20px;background:#fff}.card h3{margin:6px 0;color:var(--navy);font-size:17px}.card p{margin:0;color:var(--muted);font-size:14px}.icon{font-size:30px}.soft{background:var(--cream)}.spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.spec{border-radius:13px;background:#fff;border:1px solid var(--line);overflow:hidden}.spec img{width:100%;height:105px;object-fit:cover;display:block}.spec div{padding:12px;font-weight:850;color:var(--navy);font-size:14px}.price-wrap{overflow:auto;border-radius:13px;border:1px solid var(--line)}table{border-collapse:collapse;min-width:690px;width:100%;font-size:13px;background:white}th,td{padding:12px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--navy);color:white}tbody tr:nth-child(even){background:#f5f9fb}.hospital-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.hospital{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:white}.hospital img{width:100%;height:95px;object-fit:cover;display:block}.hospital strong{display:block;padding:10px 12px;color:var(--navy);font-size:14px}.hospital span{display:block;padding:0 12px 12px;color:var(--teal);font-size:12px;font-weight:800}.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.service{display:flex;gap:12px;padding:17px;border:1px solid var(--line);border-radius:13px;background:white}.service b{font-size:25px}.service h3{margin:0 0 4px;color:var(--navy);font-size:16px}.service p{margin:0;color:var(--muted);font-size:13px}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px}.num{font-size:24px;font-weight:950;color:var(--blue)}.step h3{font-size:14px;line-height:1.25;color:var(--navy);margin:5px 0}.step p{font-size:12px;color:var(--muted);margin:0}.cta{background:linear-gradient(120deg,#062b4b,#075b70);color:white}.cta-row{display:flex;justify-content:space-between;align-items:center;gap:24px}.cta h2{color:white;max-width:740px}.cta p{color:#d8e8ef;max-width:700px}.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.contact{padding:20px;border:1px solid var(--line);border-radius:14px}.contact h3{color:var(--navy);margin-top:0}.note{font-size:12px;color:var(--muted);margin-top:14px}footer{background:#041f37;color:#d9e6ed;padding:22px 0;font-size:12px}.foot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 @media(max-width:800px){.hero-image{height:470px;object-position:62% center}.hero-overlay{background:linear-gradient(90deg,rgba(3,36,65,.82),rgba(3,36,65,.38))}.pillar-grid{grid-template-columns:repeat(2,1fr)}.grid,.service-grid{grid-template-columns:repeat(2,1fr)}.spec-grid{grid-template-columns:repeat(3,1fr)}.hospital-grid{grid-template-columns:repeat(3,1fr)}.steps{grid-template-columns:repeat(3,1fr)}.cta-row{align-items:flex-start;flex-direction:column}}
 @media(max-width:520px){.top{align-items:center}.brand-logo{width:min(245px,60vw)}.hero-image{height:520px;object-position:60% center}.hero-overlay{background:linear-gradient(90deg,rgba(3,36,65,.88),rgba(3,36,65,.48))}.hero-copy{padding:28px 0}.hero p{font-size:16px}section{padding:42px 0}.grid,.service-grid,.contact-grid{grid-template-columns:1fr}.spec-grid{grid-template-columns:repeat(2,1fr)}.hospital-grid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:repeat(2,1fr)}.pillar{font-size:12px}.visual-band{border-radius:10px}}
 
@@ -75,23 +143,15 @@ header{background:#fff;border-bottom:3px solid var(--gold)}.top{display:flex;ali
 }
 
 .cost-poster-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  padding: 24px 30px 20px;
+  display: block;
+  padding: 26px 32px 22px;
   background: linear-gradient(135deg, #f0f7fb 0%, #ffffff 50%, #f4fbf8 100%);
   border-bottom: 2px solid #d8ad56;
   position: relative;
 }
 
 .cost-poster-header::after {
-  content: '';
-  position: absolute;
-  top: 15%;
-  bottom: 15%;
-  left: 50%;
-  width: 1px;
-  background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);
+  display: none;
 }
 
 .cost-brand-subhead {
@@ -1228,8 +1288,8 @@ a.channel-value:hover {
         <span class="ru">Аккредитация JCI и NABH</span>
       </div>
       <div class="why-card-title">
-        <span class="why-title-en">World-Class Treatment</span>
-        <span class="why-title-ru">Лечение мирового уровня</span>
+        <span class="why-title-en en">World-Class Treatment</span>
+        <span class="why-title-ru ru">Лечение мирового уровня</span>
       </div>
       <p class="why-desc en">Cutting-edge medical infrastructure, robotic surgery (da Vinci XI), proton therapy, and organ transplant centers matching top US/European standards.</p>
       <p class="why-desc ru">Передовое оборудование, роботизированная хирургия (da Vinci XI), протонная терапия и центры трансплантации по стандартам США и Европы.</p>
@@ -1271,8 +1331,8 @@ a.channel-value:hover {
         <span class="ru">Врачи с практикой в США и Европе</span>
       </div>
       <div class="why-card-title">
-        <span class="why-title-en">Experienced Specialists</span>
-        <span class="why-title-ru">Ведущие хирурги и врачи</span>
+        <span class="why-title-en en">Experienced Specialists</span>
+        <span class="why-title-ru ru">Ведущие хирурги и врачи</span>
       </div>
       <p class="why-desc en">Renowned chief surgeons, oncologists, and cardiologists with decades of clinical practice, global fellowships, and thousands of successful procedures.</p>
       <p class="why-desc ru">Известные главные хирурги, онкологи и кардиологи с многолетней практикой, международным опытом и тысячами успешных операций.</p>
@@ -1315,8 +1375,8 @@ a.channel-value:hover {
         <span class="ru">Полное русскоязычное сопровождение</span>
       </div>
       <div class="why-card-title">
-        <span class="why-title-en">Personalised Journey Support</span>
-        <span class="why-title-ru">Индивидуальное сопровождение</span>
+        <span class="why-title-en en">Personalised Journey Support</span>
+        <span class="why-title-ru ru">Индивидуальное сопровождение</span>
       </div>
       <p class="why-desc en">Comprehensive end-to-end guidance from your initial inquiry, medical visa facilitation, VIP airport transfers, comfortable stay, to aftercare back home.</p>
       <p class="why-desc ru">Полное сопровождение: от первой заявки, оформления медицинской визы и встречи в аэропорту до подбора жилья и контроля реабилитации.</p>
@@ -1350,7 +1410,7 @@ a.channel-value:hover {
   <div class="cost-poster-card">
     <!-- POSTER HEADER -->
     <div class="cost-poster-header">
-      <div class="cost-header-col left">
+      <div class="cost-header-col left en">
         <div class="cost-brand-subhead">
           <div class="cost-brand-title">MEDMOST</div>
           <div class="cost-brand-tag">MEDICAL TOURISM TO INDIA</div>
@@ -1360,7 +1420,7 @@ a.channel-value:hover {
         <p class="cost-desc-p">Most common procedures chosen by patients from Central Asia and other countries in Delhi NCR, India.</p>
       </div>
 
-      <div class="cost-header-col right">
+      <div class="cost-header-col right ru">
         <div class="cost-brand-subhead">
           <div class="cost-brand-title">МЕДМОСТ</div>
           <div class="cost-brand-tag">МЕДИЦИНСКИЙ ТУРИЗМ В ИНДИЮ</div>
@@ -1377,30 +1437,30 @@ a.channel-value:hover {
         <thead>
           <tr>
             <th class="th-proc">
-              <div class="th-proc-en">COMMON PROCEDURES</div>
-              <div class="th-proc-ru">ПОПУЛЯРНЫЕ ПРОЦЕДУРЫ</div>
+              <div class="th-proc-en en">COMMON PROCEDURES</div>
+              <div class="th-proc-ru ru">ПОПУЛЯРНЫЕ ПРОЦЕДУРЫ</div>
             </th>
             <th class="th-col th-in">
               <div class="th-flag"><svg width="28" height="28" viewBox="0 0 36 36" style="border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.25);margin-bottom:4px;display:inline-block;"><clipPath id="f-in"><circle cx="18" cy="18" r="18"/></clipPath><g clip-path="url(#f-in)"><rect width="36" height="12" fill="#FF9933"/><rect y="12" width="36" height="12" fill="#FFFFFF"/><rect y="24" width="36" height="12" fill="#138808"/><circle cx="18" cy="18" r="4.2" fill="none" stroke="#000080" stroke-width="1"/><circle cx="18" cy="18" r="1.2" fill="#000080"/></g></svg></div>
-              <div class="th-country-en">INDIA</div>
-              <div class="th-city-en">(Delhi NCR)</div>
-              <div class="th-country-ru">ИНДИЯ (Дели и НКР)</div>
+              <div class="th-country-en en">INDIA</div>
+              <div class="th-city-en en">(Delhi NCR)</div>
+              <div class="th-country-ru ru">ИНДИЯ (Дели и НКР)</div>
             </th>
             <th class="th-col th-tr">
               <div class="th-flag"><svg width="28" height="28" viewBox="0 0 36 36" style="border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.25);margin-bottom:4px;display:inline-block;"><clipPath id="f-tr"><circle cx="18" cy="18" r="18"/></clipPath><g clip-path="url(#f-tr)"><rect width="36" height="36" fill="#E30A17"/><circle cx="16" cy="18" r="7.5" fill="#FFFFFF"/><circle cx="18.5" cy="18" r="6" fill="#E30A17"/><polygon points="21,18 24.5,19.2 22.4,16.5 22.4,19.5 24.5,16.8" fill="#FFFFFF"/></g></svg></div>
-              <div class="th-country-en">TÜRKIYE</div>
-              <div class="th-country-ru">ТУРЦИЯ</div>
+              <div class="th-country-en en">TÜRKIYE</div>
+              <div class="th-country-ru ru">ТУРЦИЯ</div>
             </th>
             <th class="th-col th-eu">
               <div class="th-flag"><svg width="28" height="28" viewBox="0 0 36 36" style="border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.25);margin-bottom:4px;display:inline-block;"><clipPath id="f-eu"><circle cx="18" cy="18" r="18"/></clipPath><g clip-path="url(#f-eu)"><rect width="36" height="36" fill="#003399"/><circle cx="18" cy="7" r="1.3" fill="#FFCC00"/><circle cx="18" cy="29" r="1.3" fill="#FFCC00"/><circle cx="7" cy="18" r="1.3" fill="#FFCC00"/><circle cx="29" cy="18" r="1.3" fill="#FFCC00"/><circle cx="10.2" cy="10.2" r="1.3" fill="#FFCC00"/><circle cx="25.8" cy="25.8" r="1.3" fill="#FFCC00"/><circle cx="10.2" cy="25.8" r="1.3" fill="#FFCC00"/><circle cx="25.8" cy="10.2" r="1.3" fill="#FFCC00"/></g></svg></div>
-              <div class="th-country-en">EUROPE</div>
-              <div class="th-city-en">(UK / Germany / etc.)</div>
-              <div class="th-country-ru">ЕВРОПА</div>
+              <div class="th-country-en en">EUROPE</div>
+              <div class="th-city-en en">(UK / Germany / etc.)</div>
+              <div class="th-country-ru ru">ЕВРОПА</div>
             </th>
             <th class="th-col th-us">
               <div class="th-flag"><svg width="28" height="28" viewBox="0 0 36 36" style="border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.25);margin-bottom:4px;display:inline-block;"><clipPath id="f-us"><circle cx="18" cy="18" r="18"/></clipPath><g clip-path="url(#f-us)"><rect width="36" height="36" fill="#B22234"/><rect y="2.7" width="36" height="2.7" fill="#FFFFFF"/><rect y="8.1" width="36" height="2.7" fill="#FFFFFF"/><rect y="13.5" width="36" height="2.7" fill="#FFFFFF"/><rect y="18.9" width="36" height="2.7" fill="#FFFFFF"/><rect y="24.3" width="36" height="2.7" fill="#FFFFFF"/><rect y="29.7" width="36" height="2.7" fill="#FFFFFF"/><rect width="16" height="19" fill="#3C3B6E"/><circle cx="4" cy="4" r="0.8" fill="#FFF"/><circle cx="8" cy="4" r="0.8" fill="#FFF"/><circle cx="12" cy="4" r="0.8" fill="#FFF"/><circle cx="6" cy="8" r="0.8" fill="#FFF"/><circle cx="10" cy="8" r="0.8" fill="#FFF"/><circle cx="4" cy="12" r="0.8" fill="#FFF"/><circle cx="8" cy="12" r="0.8" fill="#FFF"/><circle cx="12" cy="12" r="0.8" fill="#FFF"/></g></svg></div>
-              <div class="th-country-en">USA</div>
-              <div class="th-country-ru">США</div>
+              <div class="th-country-en en">USA</div>
+              <div class="th-country-ru ru">США</div>
             </th>
           </tr>
         </thead>
@@ -1411,10 +1471,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-heart.png" alt="Heart Treatments" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Heart Treatments</div>
-                <div class="proc-en-sub">(Angioplasty / Bypass Surgery)</div>
-                <div class="proc-ru-name">Лечение заболеваний сердца</div>
-                <div class="proc-ru-sub">(Ангиопластика / Шунтирование)</div>
+                <div class="proc-en-name en">Heart Treatments</div>
+                <div class="proc-en-sub en">(Angioplasty / Bypass Surgery)</div>
+                <div class="proc-ru-name ru">Лечение заболеваний сердца</div>
+                <div class="proc-ru-sub ru">(Ангиопластика / Шунтирование)</div>
               </div>
             </div>
           </td>
@@ -1437,10 +1497,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-cancer.png" alt="Cancer Treatment" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Cancer Treatment</div>
-                <div class="proc-en-sub">(Chemotherapy / Targeted Therapy / Radiation)</div>
-                <div class="proc-ru-name">Лечение рака</div>
-                <div class="proc-ru-sub">(Химиотерапия / Таргетная терапия / Лучевая терапия)</div>
+                <div class="proc-en-name en">Cancer Treatment</div>
+                <div class="proc-en-sub en">(Chemotherapy / Targeted Therapy / Radiation)</div>
+                <div class="proc-ru-name ru">Лечение рака</div>
+                <div class="proc-ru-sub ru">(Химиотерапия / Таргетная терапия / Лучевая терапия)</div>
               </div>
             </div>
           </td>
@@ -1463,10 +1523,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-transplant.png" alt="Organ Transplant" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Organ Transplant</div>
-                <div class="proc-en-sub">(Kidney / Liver / Bone Marrow)</div>
-                <div class="proc-ru-name">Трансплантация органов</div>
-                <div class="proc-ru-sub">(Почка / Печень / Костный мозг)</div>
+                <div class="proc-en-name en">Organ Transplant</div>
+                <div class="proc-en-sub en">(Kidney / Liver / Bone Marrow)</div>
+                <div class="proc-ru-name ru">Трансплантация органов</div>
+                <div class="proc-ru-sub ru">(Почка / Печень / Костный мозг)</div>
               </div>
             </div>
           </td>
@@ -1489,10 +1549,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-ortho.png" alt="Orthopaedic Surgery" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Orthopaedic Surgery</div>
-                <div class="proc-en-sub">(Knee / Hip Replacement)</div>
-                <div class="proc-ru-name">Ортопедические операции</div>
-                <div class="proc-ru-sub">(Замена коленного / тазобедренного сустава)</div>
+                <div class="proc-en-name en">Orthopaedic Surgery</div>
+                <div class="proc-en-sub en">(Knee / Hip Replacement)</div>
+                <div class="proc-ru-name ru">Ортопедические операции</div>
+                <div class="proc-ru-sub ru">(Замена коленного / тазобедренного сустава)</div>
               </div>
             </div>
           </td>
@@ -1515,10 +1575,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-spine.png" alt="Spine Surgery" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Spine Surgery</div>
-                <div class="proc-en-sub">(Disc Surgery / Spinal Fixation)</div>
-                <div class="proc-ru-name">Операции на позвоночнике</div>
-                <div class="proc-ru-sub">(Удаление грыжи диска / Фиксация)</div>
+                <div class="proc-en-name en">Spine Surgery</div>
+                <div class="proc-en-sub en">(Disc Surgery / Spinal Fixation)</div>
+                <div class="proc-ru-name ru">Операции на позвоночнике</div>
+                <div class="proc-ru-sub ru">(Удаление грыжи диска / Фиксация)</div>
               </div>
             </div>
           </td>
@@ -1541,10 +1601,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-neuro.png" alt="Neurosurgery" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Neurosurgery</div>
-                <div class="proc-en-sub">(Brain Tumour / Aneurysm)</div>
-                <div class="proc-ru-name">Нейрохирургия</div>
-                <div class="proc-ru-sub">(Опухоль головного мозга / Аневризма)</div>
+                <div class="proc-en-name en">Neurosurgery</div>
+                <div class="proc-en-sub en">(Brain Tumour / Aneurysm)</div>
+                <div class="proc-ru-name ru">Нейрохирургия</div>
+                <div class="proc-ru-sub ru">(Опухоль головного мозга / Аневризма)</div>
               </div>
             </div>
           </td>
@@ -1567,10 +1627,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-eye.png" alt="Eye Treatment" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Eye Treatment</div>
-                <div class="proc-en-sub">(Cataract / LASIK / Retina)</div>
-                <div class="proc-ru-name">Лечение глаз</div>
-                <div class="proc-ru-sub">(Катаракта / LASIK / Сетчатка)</div>
+                <div class="proc-en-name en">Eye Treatment</div>
+                <div class="proc-en-sub en">(Cataract / LASIK / Retina)</div>
+                <div class="proc-ru-name ru">Лечение глаз</div>
+                <div class="proc-ru-sub ru">(Катаракта / LASIK / Сетчатка)</div>
               </div>
             </div>
           </td>
@@ -1593,10 +1653,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-ivf.png" alt="Fertility Treatment (IVF)" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Fertility Treatment (IVF)</div>
-                <div class="proc-en-sub">In-vitro Fertilisation / Reproductive Medicine</div>
-                <div class="proc-ru-name">Лечение бесплодия (ЭКО)</div>
-                <div class="proc-ru-sub">Экстракорпоральное оплодотворение</div>
+                <div class="proc-en-name en">Fertility Treatment (IVF)</div>
+                <div class="proc-en-sub en">In-vitro Fertilisation / Reproductive Medicine</div>
+                <div class="proc-ru-name ru">Лечение бесплодия (ЭКО)</div>
+                <div class="proc-ru-sub ru">Экстракорпоральное оплодотворение</div>
               </div>
             </div>
           </td>
@@ -1619,10 +1679,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-gastro.png" alt="Gastroenterology & Liver Treatment" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Gastroenterology & Liver Treatment</div>
-                <div class="proc-en-sub">(Endoscopy / Liver Surgery)</div>
-                <div class="proc-ru-name">Гастроэнтерология и лечение печени</div>
-                <div class="proc-ru-sub">(Эндоскопия / Операции на печени)</div>
+                <div class="proc-en-name en">Gastroenterology & Liver Treatment</div>
+                <div class="proc-en-sub en">(Endoscopy / Liver Surgery)</div>
+                <div class="proc-ru-name ru">Гастроэнтерология и лечение печени</div>
+                <div class="proc-ru-sub ru">(Эндоскопия / Операции на печени)</div>
               </div>
             </div>
           </td>
@@ -1645,10 +1705,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-urology.png" alt="Urology Treatment" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Urology Treatment</div>
-                <div class="proc-en-sub">(Kidney Stone / Prostate Surgery)</div>
-                <div class="proc-ru-name">Урологические процедуры</div>
-                <div class="proc-ru-sub">(Лечение камней в почках / Операции на предстательной железе)</div>
+                <div class="proc-en-name en">Urology Treatment</div>
+                <div class="proc-en-sub en">(Kidney Stone / Prostate Surgery)</div>
+                <div class="proc-ru-name ru">Урологические процедуры</div>
+                <div class="proc-ru-sub ru">(Лечение камней в почках / Операции на предстательной железе)</div>
               </div>
             </div>
           </td>
@@ -1671,10 +1731,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-plastic.png" alt="Plastic & Reconstructive Surgery" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Plastic & Reconstructive Surgery</div>
-                <div class="proc-en-sub">(Cosmetic / Burn Treatment)</div>
-                <div class="proc-ru-name">Пластическая и реконструктивная хирургия</div>
-                <div class="proc-ru-sub">(Эстетические операции / Лечение ожогов)</div>
+                <div class="proc-en-name en">Plastic & Reconstructive Surgery</div>
+                <div class="proc-en-sub en">(Cosmetic / Burn Treatment)</div>
+                <div class="proc-ru-name ru">Пластическая и реконструктивная хирургия</div>
+                <div class="proc-ru-sub ru">(Эстетические операции / Лечение ожогов)</div>
               </div>
             </div>
           </td>
@@ -1697,10 +1757,10 @@ a.channel-value:hover {
             <div class="proc-cell-wrap">
               <img class="proc-thumb" src="assets/images/treatments/icons/thumb-dental.png" alt="Dental Treatment" loading="lazy">
               <div class="proc-text">
-                <div class="proc-en-name">Dental Treatment</div>
-                <div class="proc-en-sub">(Implants / Full Mouth Rehabilitation)</div>
-                <div class="proc-ru-name">Стоматологическое лечение</div>
-                <div class="proc-ru-sub">(Импланты / Полная реконструкция зубного ряда)</div>
+                <div class="proc-en-name en">Dental Treatment</div>
+                <div class="proc-en-sub en">(Implants / Full Mouth Rehabilitation)</div>
+                <div class="proc-ru-name ru">Стоматологическое лечение</div>
+                <div class="proc-ru-sub ru">(Импланты / Полная реконструкция зубного ряда)</div>
               </div>
             </div>
           </td>
@@ -1726,36 +1786,36 @@ a.channel-value:hover {
       <div class="cost-feature-item">
         <div class="cost-feature-icon">🛡️</div>
         <div class="cost-feature-text">
-          <div class="f-en">World-Class Hospitals</div>
-          <div class="f-ru">Больницы мирового уровня</div>
+          <div class="f-en en">World-Class Hospitals</div>
+          <div class="f-ru ru">Больницы мирового уровня</div>
         </div>
       </div>
       <div class="cost-feature-item">
         <div class="cost-feature-icon">👨‍⚕️</div>
         <div class="cost-feature-text">
-          <div class="f-en">Experienced Specialists</div>
-          <div class="f-ru">Опытные специалисты</div>
+          <div class="f-en en">Experienced Specialists</div>
+          <div class="f-ru ru">Опытные специалисты</div>
         </div>
       </div>
       <div class="cost-feature-item">
         <div class="cost-feature-icon">💰</div>
         <div class="cost-feature-text">
-          <div class="f-en">Significant Cost Savings</div>
-          <div class="f-ru">Значительная экономия средств</div>
+          <div class="f-en en">Significant Cost Savings</div>
+          <div class="f-ru ru">Значительная экономия средств</div>
         </div>
       </div>
       <div class="cost-feature-item">
         <div class="cost-feature-icon">✈️</div>
         <div class="cost-feature-text">
-          <div class="f-en">Comprehensive Travel Support</div>
-          <div class="f-ru">Полная помощь с поездкой</div>
+          <div class="f-en en">Comprehensive Travel Support</div>
+          <div class="f-ru ru">Полная помощь с поездкой</div>
         </div>
       </div>
       <div class="cost-feature-item">
         <div class="cost-feature-icon">🤝</div>
         <div class="cost-feature-text">
-          <div class="f-en">Personalised Assistance</div>
-          <div class="f-ru">Индивидуальное сопровождение</div>
+          <div class="f-en en">Personalised Assistance</div>
+          <div class="f-ru ru">Индивидуальное сопровождение</div>
         </div>
       </div>
     </div>
@@ -1771,7 +1831,19 @@ a.channel-value:hover {
   </div>
 </div></section>
 <section class="soft"><div class="wrap"><div class="section-head"><h2 class="en">Leading hospitals featured in our brochure</h2><h2 class="ru">Ведущие больницы из нашей брошюры</h2><p class="en">Hospital selection depends on specialty, clinical assessment and availability.</p><p class="ru">Выбор больницы зависит от специализации, медицинской оценки и доступности.</p></div><div class="hospital-grid">
-<div class="hospital" onclick="openHospitalModal('apollo')"><img src="assets/images/hospitals/hospital-apollo.jpg" alt="Indraprastha Apollo Hospitals" loading="lazy"><strong>Indraprastha Apollo Hospitals</strong><span>New Delhi</span></div><div class="hospital" onclick="openHospitalModal('fortis')"><img src="assets/images/hospitals/hospital-fortis.jpg" alt="Fortis Escorts Heart Institute" loading="lazy"><strong>Fortis Escorts Heart Institute</strong><span>New Delhi</span></div><div class="hospital" onclick="openHospitalModal('blkmax')"><img src="assets/images/hospitals/hospital-blkmax.jpg" alt="BLK-Max Super Speciality Hospital" loading="lazy"><strong>BLK-Max Super Speciality Hospital</strong><span>New Delhi</span></div><div class="hospital" onclick="openHospitalModal('max')"><img src="assets/images/hospitals/hospital-max.jpg" alt="Max Super Speciality Hospital" loading="lazy"><strong>Max Super Speciality Hospital</strong><span>Saket, New Delhi</span></div><div class="hospital" onclick="openHospitalModal('medanta')"><img src="assets/images/hospitals/hospital-medanta.jpg" alt="Medanta" loading="lazy"><strong>Medanta – The Medicity</strong><span>Gurugram</span></div><div class="hospital" onclick="openHospitalModal('artemis')"><img src="assets/images/hospitals/hospital-artemis.jpg" alt="Artemis Hospital" loading="lazy"><strong>Artemis Hospital</strong><span>Gurugram</span></div><div class="hospital" onclick="openHospitalModal('yashoda')"><img src="assets/images/hospitals/hospital-yashoda.jpg" alt="Yashoda Super Speciality Hospitals" loading="lazy"><strong>Yashoda Super Speciality Hospitals</strong><span>Kaushambi, Ghaziabad</span></div><div class="hospital" onclick="openHospitalModal('amrita')"><img src="assets/images/hospitals/hospital-amrita.jpg" alt="Amrita Hospital" loading="lazy"><strong>Amrita Hospital</strong><span>Faridabad</span></div><div class="hospital" onclick="openHospitalModal('gangaram')"><img src="assets/images/hospitals/hospital-gangaram.jpg" alt="Sir Ganga Ram Hospital" loading="lazy"><strong>Sir Ganga Ram Hospital</strong><span>New Delhi</span></div><div class="hospital" onclick="openHospitalModal('manipal')"><img src="assets/images/hospitals/hospital-manipal.jpg" alt="Manipal Hospital" loading="lazy"><strong>Manipal Hospital</strong><span>Dwarka, New Delhi</span></div><div class="hospital" onclick="openHospitalModal('ckbirla')"><img src="assets/images/hospitals/hospital-ckbirla.jpg" alt="CK Birla Hospital" loading="lazy"><strong>CK Birla Hospital</strong><span>Gurugram</span></div><div class="hospital" onclick="openHospitalModal('shalby')"><img src="assets/images/hospitals/hospital-shalby.jpg" alt="Shalby Multi-Speciality Hospital" loading="lazy"><strong>Shalby Multi-Speciality Hospital</strong><span>Gurugram</span></div></div><p class="note en">Hospital names are shown as in the brochure; listing alone does not imply a formal partnership or guaranteed acceptance.</p><p class="note ru">Названия указаны по брошюре; само упоминание не означает официального партнёрства или гарантированного приёма.</p></div></section>
+<div class="hospital" onclick="openHospitalModal('apollo')"><img src="assets/images/hospitals/hospital-apollo.jpg" alt="Indraprastha Apollo Hospitals" loading="lazy"><strong><span class="en">Indraprastha Apollo Hospitals</span><span class="ru">Больницы Индрапрастха Аполло</span></strong><span><span class="en">New Delhi</span><span class="ru">Нью-Дели</span></span></div>
+<div class="hospital" onclick="openHospitalModal('fortis')"><img src="assets/images/hospitals/hospital-fortis.jpg" alt="Fortis Escorts Heart Institute" loading="lazy"><strong><span class="en">Fortis Escorts Heart Institute</span><span class="ru">Институт сердца Фортис Эскортс</span></strong><span><span class="en">New Delhi</span><span class="ru">Нью-Дели</span></span></div>
+<div class="hospital" onclick="openHospitalModal('blkmax')"><img src="assets/images/hospitals/hospital-blkmax.jpg" alt="BLK-Max Super Speciality Hospital" loading="lazy"><strong><span class="en">BLK-Max Super Speciality Hospital</span><span class="ru">Больница БЛК-Макс</span></strong><span><span class="en">New Delhi</span><span class="ru">Нью-Дели</span></span></div>
+<div class="hospital" onclick="openHospitalModal('max')"><img src="assets/images/hospitals/hospital-max.jpg" alt="Max Super Speciality Hospital" loading="lazy"><strong><span class="en">Max Super Speciality Hospital</span><span class="ru">Больница Макс Супер Спешиалти</span></strong><span><span class="en">Saket, New Delhi</span><span class="ru">Сакет, Нью-Дели</span></span></div>
+<div class="hospital" onclick="openHospitalModal('medanta')"><img src="assets/images/hospitals/hospital-medanta.jpg" alt="Medanta" loading="lazy"><strong><span class="en">Medanta – The Medicity</span><span class="ru">Клиника Меданта – Зе Медисити</span></strong><span><span class="en">Gurugram</span><span class="ru">Гуруграм</span></span></div>
+<div class="hospital" onclick="openHospitalModal('artemis')"><img src="assets/images/hospitals/hospital-artemis.jpg" alt="Artemis Hospital" loading="lazy"><strong><span class="en">Artemis Hospital</span><span class="ru">Больница Артемис</span></strong><span><span class="en">Gurugram</span><span class="ru">Гуруграм</span></span></div>
+<div class="hospital" onclick="openHospitalModal('yashoda')"><img src="assets/images/hospitals/hospital-yashoda.jpg" alt="Yashoda Super Speciality Hospitals" loading="lazy"><strong><span class="en">Yashoda Super Speciality Hospitals</span><span class="ru">Больницы Яшода</span></strong><span><span class="en">Kaushambi, Ghaziabad</span><span class="ru">Каушамби, Газиабад</span></span></div>
+<div class="hospital" onclick="openHospitalModal('amrita')"><img src="assets/images/hospitals/hospital-amrita.jpg" alt="Amrita Hospital" loading="lazy"><strong><span class="en">Amrita Hospital</span><span class="ru">Госпиталь Амрита</span></strong><span><span class="en">Faridabad</span><span class="ru">Фаридабад</span></span></div>
+<div class="hospital" onclick="openHospitalModal('gangaram')"><img src="assets/images/hospitals/hospital-gangaram.jpg" alt="Sir Ganga Ram Hospital" loading="lazy"><strong><span class="en">Sir Ganga Ram Hospital</span><span class="ru">Больница Сэр Ганга Рам</span></strong><span><span class="en">New Delhi</span><span class="ru">Нью-Дели</span></span></div>
+<div class="hospital" onclick="openHospitalModal('manipal')"><img src="assets/images/hospitals/hospital-manipal.jpg" alt="Manipal Hospital" loading="lazy"><strong><span class="en">Manipal Hospital</span><span class="ru">Больница Манипал</span></strong><span><span class="en">Dwarka, New Delhi</span><span class="ru">Дварка, Нью-Дели</span></span></div>
+<div class="hospital" onclick="openHospitalModal('ckbirla')"><img src="assets/images/hospitals/hospital-ckbirla.jpg" alt="CK Birla Hospital" loading="lazy"><strong><span class="en">CK Birla Hospital</span><span class="ru">Больница СК Бирла</span></strong><span><span class="en">Gurugram</span><span class="ru">Гуруграм</span></span></div>
+<div class="hospital" onclick="openHospitalModal('shalby')"><img src="assets/images/hospitals/hospital-shalby.jpg" alt="Shalby Multi-Speciality Hospital" loading="lazy"><strong><span class="en">Shalby Multi-Speciality Hospital</span><span class="ru">Больница Шалби</span></strong><span><span class="en">Gurugram</span><span class="ru">Гуруграм</span></span></div>
+</div><p class="note en">Hospital names are shown as in the brochure; listing alone does not imply a formal partnership or guaranteed acceptance.</p><p class="note ru">Названия указаны по брошюре; само упоминание не означает официального партнёрства или гарантированного приёма.</p></div></section>
 <!-- ========================================================================
      UPGRADED SECTION: Complete Support for Your Journey
      ======================================================================== -->
@@ -2137,7 +2209,7 @@ a.channel-value:hover {
             <div class="channel-info">
               <span class="channel-label en">Coordination Hub</span>
               <span class="channel-label ru">Координационный центр</span>
-              <span class="channel-value" style="font-size: 14px;">New Delhi & NCR, India</span>
+              <span class="channel-value" style="font-size: 14px;"><span class="en">New Delhi & NCR, India</span><span class="ru">Нью-Дели и регион NCR, Индия</span></span>
               <span class="channel-subtext en">Direct presence at top hospitals & airport assistance</span>
               <span class="channel-subtext ru">Личное сопровождение в клиниках и встреча в аэропорту</span>
             </div>
@@ -2201,11 +2273,11 @@ a.channel-value:hover {
     </div>
   </div>
 </section>
-</main><footer><div class="wrap foot"><span>© <span id="year"></span> MEDMOST · Medical Tourism to India</span><span class="en">Your health — our priority</span><span class="ru">Ваше здоровье — наш приоритет</span></div></footer>
+</main><footer><div class="wrap foot"><span>© <span id="year"></span> MEDMOST · <span class="en">Medical Tourism to India</span><span class="ru">Медицинский туризм в Индию</span></span><span class="en">Your health — our priority</span><span class="ru">Ваше здоровье — наш приоритет</span></div></footer>
 <script>
-const body=document.body, en=document.getElementById('enBtn'), ru=document.getElementById('ruBtn');
-function setLang(l){const isRu=l==='ru';body.classList.toggle('russian',isRu);en.classList.toggle('active',!isRu);ru.classList.toggle('active',isRu);document.documentElement.lang=l;document.title=isRu?'MEDMOST | Медицинский туризм в Индию':'MEDMOST | Medical Tourism to India'}
-en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>setLang('ru'));document.getElementById('year').textContent=new Date().getFullYear();
+// Year stamp
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 </script>
 <!-- ========================================================================
      MODAL 1: Treatment Details Modal
@@ -2213,14 +2285,14 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
 <div class="modal-backdrop" id="treatmentModal" role="dialog" aria-modal="true" aria-labelledby="treatmentModalTitle">
   <div class="modal-card">
     <div class="modal-header">
-      <h3 id="treatmentModalTitle">Treatment Details</h3>
+      <h3 id="treatmentModalTitle"><span class="en">Treatment Details</span><span class="ru">Информация о лечении</span></h3>
       <button type="button" class="modal-close" onclick="closeModal('treatmentModal')" aria-label="Close modal">×</button>
     </div>
     <div class="modal-body">
       <img id="treatmentModalImg" class="modal-img-banner" src="" alt="Treatment">
       <div class="modal-badge-row">
-        <span class="modal-badge" id="treatmentModalCost">Cost</span>
-        <span class="modal-badge city" id="treatmentModalDuration">Duration</span>
+        <span class="modal-badge" id="treatmentModalCost"><span class="en">Cost</span><span class="ru">Стоимость</span></span>
+        <span class="modal-badge city" id="treatmentModalDuration"><span class="en">Duration</span><span class="ru">Длительность</span></span>
       </div>
       <p id="treatmentModalDesc" style="font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:14px;"></p>
       
@@ -2231,7 +2303,8 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
       <ul class="modal-proc-list" id="treatmentModalProcedures"></ul>
 
       <button type="button" class="btn" id="treatmentModalApplyBtn" style="width:100%; margin-top:10px;">
-        Apply for this Treatment ↗
+        <span class="en">Apply for this Treatment ↗</span>
+        <span class="ru">Подать заявку на лечение ↗</span>
       </button>
     </div>
   </div>
@@ -2243,15 +2316,15 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
 <div class="modal-backdrop" id="hospitalModal" role="dialog" aria-modal="true" aria-labelledby="hospitalModalTitle">
   <div class="modal-card">
     <div class="modal-header">
-      <h3 id="hospitalModalTitle">Hospital Profile</h3>
+      <h3 id="hospitalModalTitle"><span class="en">Hospital Profile</span><span class="ru">Профиль больницы</span></h3>
       <button type="button" class="modal-close" onclick="closeModal('hospitalModal')" aria-label="Close modal">×</button>
     </div>
     <div class="modal-body">
       <img id="hospitalModalImg" class="modal-img-banner" src="" alt="Hospital">
       <div class="modal-badge-row">
-        <span class="modal-badge city" id="hospitalModalCity">Location</span>
-        <span class="modal-badge accred" id="hospitalModalAccred">Accreditation</span>
-        <span class="modal-badge" id="hospitalModalBeds">Beds</span>
+        <span class="modal-badge city" id="hospitalModalCity"><span class="en">Location</span><span class="ru">Город</span></span>
+        <span class="modal-badge accred" id="hospitalModalAccred"><span class="en">Accreditation</span><span class="ru">Аккредитация</span></span>
+        <span class="modal-badge" id="hospitalModalBeds"><span class="en">Beds</span><span class="ru">Коек</span></span>
       </div>
       <p id="hospitalModalDesc" style="font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:14px;"></p>
 
@@ -2262,7 +2335,8 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
       <ul class="modal-proc-list" id="hospitalModalSpecialties"></ul>
 
       <button type="button" class="btn" id="hospitalModalApplyBtn" style="width:100%; margin-top:10px;">
-        Book Consultation at this Hospital ↗
+        <span class="en">Book Consultation at this Hospital ↗</span>
+        <span class="ru">Записаться на консультацию ↗</span>
       </button>
     </div>
   </div>
@@ -2316,14 +2390,7 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
                 <span class="ru">Страна проживания *</span>
               </label>
               <select id="applyCountry" class="form-select" required>
-                <option value="">-- Select Country --</option>
-                <option value="Kyrgyzstan" selected>Kyrgyzstan (Кыргызстан)</option>
-                <option value="Kazakhstan">Kazakhstan (Казахстан)</option>
-                <option value="Uzbekistan">Uzbekistan (Узбекистан)</option>
-                <option value="Tajikistan">Tajikistan (Таджикистан)</option>
-                <option value="Russia">Russia (Россия)</option>
-                <option value="Azerbaijan">Azerbaijan (Азербайджан)</option>
-                <option value="Other">Other Country</option>
+                <!-- Populated dynamically based on selected language (EN / RU) -->
               </select>
             </div>
 
@@ -2333,18 +2400,7 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
                 <span class="ru">Направление лечения</span>
               </label>
               <select id="applyTreatmentSelect" class="form-select">
-                <option value="cardiac">Cardiac Care / Heart Treatment</option>
-                <option value="cancer">Cancer Care / Oncology</option>
-                <option value="transplant">Organ Transplant</option>
-                <option value="orthopaedics">Orthopaedics & Joint Surgery</option>
-                <option value="neuro">Neurosciences & Brain Surgery</option>
-                <option value="eye">Eye Care / Ophthalmology</option>
-                <option value="fertility">Women's Health & IVF</option>
-                <option value="gastro">Gastroenterology & Liver Treatment</option>
-                <option value="urology">Urology Treatment</option>
-                <option value="dental">Dental Care & Rehabilitation</option>
-                <option value="pulmonology">Pulmonology & Respiratory Care</option>
-                <option value="plasticsurgery">Plastic & Reconstructive Surgery</option>
+                <!-- Populated dynamically based on selected language (EN / RU) -->
               </select>
             </div>
           </div>
@@ -2355,19 +2411,7 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
               <span class="ru">Предпочитаемая больница (по желанию)</span>
             </label>
             <select id="applyHospitalSelect" class="form-select">
-              <option value="">-- Any Recommended Hospital / Любая подходящая клиника --</option>
-              <option value="apollo">Indraprastha Apollo Hospitals (New Delhi)</option>
-              <option value="fortis">Fortis Escorts Heart Institute (New Delhi)</option>
-              <option value="blkmax">BLK-Max Super Speciality Hospital (New Delhi)</option>
-              <option value="max">Max Super Speciality Hospital (Saket, New Delhi)</option>
-              <option value="medanta">Medanta – The Medicity (Gurugram)</option>
-              <option value="artemis">Artemis Hospital (Gurugram)</option>
-              <option value="yashoda">Yashoda Super Speciality Hospitals (Kaushambi)</option>
-              <option value="amrita">Amrita Hospital (Faridabad)</option>
-              <option value="gangaram">Sir Ganga Ram Hospital (New Delhi)</option>
-              <option value="manipal">Manipal Hospital (Dwarka, New Delhi)</option>
-              <option value="ckbirla">CK Birla Hospital (Gurugram)</option>
-              <option value="shalby">Shalby Multi-Speciality Hospital (Gurugram)</option>
+              <!-- Populated dynamically based on selected language (EN / RU) -->
             </select>
           </div>
 
@@ -2388,7 +2432,7 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
               <div style="font-size:24px;">📁</div>
               <strong class="en" style="font-size:13px;">Click to select files</strong>
               <strong class="ru" style="font-size:13px;">Нажмите для выбора файлов</strong>
-              <p style="margin:2px 0 0; font-size:11.5px; color:var(--muted);">PDF, JPG, PNG, DICOM (до 25 МБ)</p>
+              <p class="en" style="margin:2px 0 0; font-size:11.5px; color:var(--muted);">PDF, JPG, PNG, DICOM (up to 25 MB)</p><p class="ru" style="margin:2px 0 0; font-size:11.5px; color:var(--muted);">PDF, JPG, PNG, DICOM (до 25 МБ)</p>
               <input type="file" id="medicalReportsInput" multiple style="display:none;" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.zip">
             </div>
             <div class="file-list" id="fileListPreview"></div>
@@ -2416,8 +2460,8 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
           <span class="ru">Заявка успешно принята!</span>
         </h3>
         <p style="font-size:13.5px; color:var(--muted); margin:0 0 10px;">
-          <span class="en">Thank you, <strong id="successPatientName">Patient</strong>. Your medical enquiry has been registered.</span>
-          <span class="ru">Спасибо, <strong id="successPatientName">Пациент</strong>. Ваша заявка зарегистрирована.</span>
+          <span class="en">Thank you, <strong class="successPatientName">Patient</strong>. Your medical enquiry has been registered.</span>
+          <span class="ru">Спасибо, <strong class="successPatientName">Пациент</strong>. Ваша заявка зарегистрирована.</span>
         </p>
 
         <div class="ref-box" id="successRefCode">MM-2026-000000</div>
@@ -2446,164 +2490,404 @@ en.addEventListener('click',()=>setLang('en'));ru.addEventListener('click',()=>s
 <script src="js/data.js"></script>
 <script src="js/supabase-client.js"></script>
 <script>
-window.closeModal = function(id) {
-  const el = document.getElementById(id);
-  if (el) el.classList.remove('active');
-  document.body.style.overflow = '';
-};
+(function() {
+  const LANG_STORAGE_KEY = 'medmost_selected_language';
+  let currentLang = 'en';
+  let currentOpenTreatmentId = null;
+  let currentOpenHospitalId = null;
 
-window.openModal = function(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.add('active');
-    document.body.style.overflow = 'hidden';
+  const enBtn = document.getElementById('enBtn');
+  const ruBtn = document.getElementById('ruBtn');
+
+  // Country lists
+  const COUNTRIES_EN = [
+    { value: "", text: "-- Select Country of Residence --" },
+    { value: "Kyrgyzstan", text: "Kyrgyzstan" },
+    { value: "Kazakhstan", text: "Kazakhstan" },
+    { value: "Uzbekistan", text: "Uzbekistan" },
+    { value: "Tajikistan", text: "Tajikistan" },
+    { value: "Russia", text: "Russia" },
+    { value: "Azerbaijan", text: "Azerbaijan" },
+    { value: "Turkmenistan", text: "Turkmenistan" },
+    { value: "Other", text: "Other Country" }
+  ];
+
+  const COUNTRIES_RU = [
+    { value: "", text: "-- Выберите страну проживания --" },
+    { value: "Kyrgyzstan", text: "Кыргызстан" },
+    { value: "Kazakhstan", text: "Казахстан" },
+    { value: "Uzbekistan", text: "Узбекистан" },
+    { value: "Tajikistan", text: "Таджикистан" },
+    { value: "Russia", text: "Россия" },
+    { value: "Azerbaijan", text: "Азербайджан" },
+    { value: "Turkmenistan", text: "Туркменистан" },
+    { value: "Other", text: "Другая страна" }
+  ];
+
+  // Treatment list
+  const TREATMENTS_EN = [
+    { value: "cardiac", text: "Cardiac Care / Heart Treatment" },
+    { value: "cancer", text: "Cancer Care / Oncology" },
+    { value: "transplant", text: "Organ Transplant (Kidney / Liver / Bone Marrow)" },
+    { value: "orthopaedics", text: "Orthopaedics & Joint Replacement" },
+    { value: "neuro", text: "Neurosciences & Brain Surgery" },
+    { value: "eye", text: "Eye Care / Ophthalmology" },
+    { value: "fertility", text: "Women's Health & IVF" },
+    { value: "gastro", text: "Gastroenterology & Liver Treatment" },
+    { value: "urology", text: "Urology & Kidney Stone Treatment" },
+    { value: "dental", text: "Dental Care & Rehabilitation" },
+    { value: "pulmonology", text: "Pulmonology & Respiratory Care" },
+    { value: "plasticsurgery", text: "Plastic & Reconstructive Surgery" }
+  ];
+
+  const TREATMENTS_RU = [
+    { value: "cardiac", text: "Кардиология и хирургия сердца" },
+    { value: "cancer", text: "Онкология и лечение рака" },
+    { value: "transplant", text: "Трансплантация органов (почки, печень, костный мозг)" },
+    { value: "orthopaedics", text: "Ортопедия и замена суставов" },
+    { value: "neuro", text: "Нейрохирургия и заболевания мозга" },
+    { value: "eye", text: "Офтальмология и лечение глаз" },
+    { value: "fertility", text: "ЭКО и женское здоровье" },
+    { value: "gastro", text: "Гастроэнтерология и гепатология" },
+    { value: "urology", text: "Урология и дробление камней" },
+    { value: "dental", text: "Стоматология и имплантация" },
+    { value: "pulmonology", text: "Пульмонология и заболевания легких" },
+    { value: "plasticsurgery", text: "Пластическая и реконструктивная хирургия" }
+  ];
+
+  // Hospital list
+  const HOSPITALS_EN = [
+    { value: "", text: "-- Any Recommended Accredited Hospital --" },
+    { value: "apollo", text: "Indraprastha Apollo Hospitals (New Delhi)" },
+    { value: "fortis", text: "Fortis Escorts Heart Institute (New Delhi)" },
+    { value: "blkmax", text: "BLK-Max Super Speciality Hospital (New Delhi)" },
+    { value: "max", text: "Max Super Speciality Hospital (Saket, New Delhi)" },
+    { value: "medanta", text: "Medanta – The Medicity (Gurugram)" },
+    { value: "artemis", text: "Artemis Hospital (Gurugram)" },
+    { value: "yashoda", text: "Yashoda Super Speciality Hospitals (Kaushambi)" },
+    { value: "amrita", text: "Amrita Hospital (Faridabad)" },
+    { value: "gangaram", text: "Sir Ganga Ram Hospital (New Delhi)" },
+    { value: "manipal", text: "Manipal Hospital (Dwarka, New Delhi)" },
+    { value: "ckbirla", text: "CK Birla Hospital (Gurugram)" },
+    { value: "shalby", text: "Shalby Multi-Speciality Hospital (Gurugram)" }
+  ];
+
+  const HOSPITALS_RU = [
+    { value: "", text: "-- Любая рекомендованная клиника --" },
+    { value: "apollo", text: "Больницы Индрапрастха Аполло (Нью-Дели)" },
+    { value: "fortis", text: "Институт сердца Фортис Эскортс (Нью-Дели)" },
+    { value: "blkmax", text: "Больница БЛК-Макс (Нью-Дели)" },
+    { value: "max", text: "Больница Макс Супер Спешиалти (Сакет, Нью-Дели)" },
+    { value: "medanta", text: "Клиника Меданта – Зе Медисити (Гуруграм)" },
+    { value: "artemis", text: "Больница Артемис (Гуруграм)" },
+    { value: "yashoda", text: "Больницы Яшода (Каушамби)" },
+    { value: "amrita", text: "Госпиталь Амрита (Фаридабад)" },
+    { value: "gangaram", text: "Больница Сэр Ганга Рам (Нью-Дели)" },
+    { value: "manipal", text: "Больница Манипал (Дварка, Нью-Дели)" },
+    { value: "ckbirla", text: "Больница СК Бирла (Гуруграм)" },
+    { value: "shalby", text: "Больница Шалби (Гуруграм)" }
+  ];
+
+  function populateSelect(selectEl, items) {
+    if (!selectEl) return;
+    const currentVal = selectEl.value;
+    selectEl.innerHTML = '';
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.value;
+      opt.textContent = item.text;
+      if (item.value === currentVal) opt.selected = true;
+      selectEl.appendChild(opt);
+    });
+    if (currentVal) selectEl.value = currentVal;
   }
-};
 
-window.openTreatmentModal = function(tid) {
-  closeModal('hospitalModal');
-  closeModal('applyModal');
-  const t = (window.MEDMOST_DATA && window.MEDMOST_DATA.treatments) ? window.MEDMOST_DATA.treatments.find(item => item.id === tid) : null;
-  if (!t) return;
-  const isRu = document.body.classList.contains('russian');
-  document.getElementById('treatmentModalTitle').textContent = isRu ? t.titleRu : t.titleEn;
-  document.getElementById('treatmentModalImg').src = t.image;
-  document.getElementById('treatmentModalImg').alt = isRu ? t.titleRu : t.titleEn;
-  document.getElementById('treatmentModalCost').textContent = (isRu ? 'Индия: ' : 'India: ') + t.costIndia;
-  document.getElementById('treatmentModalDuration').textContent = (isRu ? 'Пребывание: ' : 'Stay: ') + t.stayDuration;
-  document.getElementById('treatmentModalDesc').textContent = isRu ? t.descriptionRu : t.descriptionEn;
-  const procs = isRu ? t.proceduresRu : t.proceduresEn;
-  document.getElementById('treatmentModalProcedures').innerHTML = procs.map(p => '<li>' + p + '</li>').join('');
-  const applyBtn = document.getElementById('treatmentModalApplyBtn');
-  applyBtn.textContent = isRu ? 'Оставить заявку на лечение ↗' : 'Apply for this Treatment ↗';
-  applyBtn.onclick = function() {
-    closeModal('treatmentModal');
-    openApplyModal({ treatmentId: t.id });
-  };
-  openModal('treatmentModal');
-};
+  function updateDynamicLanguage(lang) {
+    const isRu = (lang === 'ru');
 
-window.openHospitalModal = function(hid) {
-  closeModal('treatmentModal');
-  closeModal('applyModal');
-  const h = (window.MEDMOST_DATA && window.MEDMOST_DATA.hospitals) ? window.MEDMOST_DATA.hospitals.find(item => item.id === hid) : null;
-  if (!h) return;
-  const isRu = document.body.classList.contains('russian');
-  document.getElementById('hospitalModalTitle').textContent = h.name;
-  document.getElementById('hospitalModalImg').src = h.image;
-  document.getElementById('hospitalModalImg').alt = h.name;
-  document.getElementById('hospitalModalCity').textContent = '📍 ' + h.city;
-  document.getElementById('hospitalModalAccred').textContent = h.accreditation;
-  document.getElementById('hospitalModalBeds').textContent = h.beds;
-  document.getElementById('hospitalModalDesc').textContent = isRu ? h.overviewRu : h.overviewEn;
-  const specs = isRu ? h.specialtiesRu : h.specialtiesEn;
-  document.getElementById('hospitalModalSpecialties').innerHTML = specs.map(s => '<li>' + s + '</li>').join('');
-  const applyBtn = document.getElementById('hospitalModalApplyBtn');
-  applyBtn.textContent = isRu ? 'Консультация в этой больнице ↗' : 'Book Consultation at this Hospital ↗';
-  applyBtn.onclick = function() {
-    closeModal('hospitalModal');
-    openApplyModal({ hospitalId: h.id });
-  };
-  openModal('hospitalModal');
-};
-
-window.openApplyModal = function(pref) {
-  pref = pref || {};
-  closeModal('treatmentModal');
-  closeModal('hospitalModal');
-  const formFields = document.getElementById('formFieldsView');
-  const formSuccess = document.getElementById('formSuccessView');
-  if (formFields) formFields.style.display = 'block';
-  if (formSuccess) formSuccess.style.display = 'none';
-
-  // Dynamic contextual title for modal
-  const titleEl = document.getElementById('applyModalTitle');
-  if (titleEl) {
-    const enText = pref.titleEn || 'Apply for Treatment in India';
-    const ruText = pref.titleRu || 'Заявка на лечение в Индии';
-    titleEl.innerHTML = `<span class="en">${enText}</span><span class="ru">${ruText}</span>`;
-  }
-
-  if (pref.treatmentId) {
-    const sel = document.getElementById('applyTreatmentSelect');
-    if (sel) sel.value = pref.treatmentId;
-  }
-  if (pref.hospitalId) {
-    const sel = document.getElementById('applyHospitalSelect');
-    if (sel) sel.value = pref.hospitalId;
-  }
-  openModal('applyModal');
-};
-
-// Backdrop click close
-document.querySelectorAll('.modal-backdrop').forEach(el => {
-  el.addEventListener('click', e => {
-    if (e.target === el) {
-      el.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-});
-
-// File upload preview
-const fileInput = document.getElementById('medicalReportsInput');
-if (fileInput) {
-  fileInput.addEventListener('change', () => {
-    const listEl = document.getElementById('fileListPreview');
-    if (!listEl) return;
-    const files = Array.from(fileInput.files);
-    listEl.innerHTML = files.map(f => '<div>📎 ' + f.name + ' (' + Math.round(f.size/1024) + ' KB)</div>').join('');
-  });
-}
-
-// Application form submit
-const appForm = document.getElementById('applicationForm');
-if (appForm) {
-  appForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const isRu = document.body.classList.contains('russian');
-    const submitBtn = appForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-
-    const name = document.getElementById('applyName').value.trim();
-    const phone = document.getElementById('applyPhone').value.trim();
-    const email = document.getElementById('applyEmail').value.trim();
-    const country = document.getElementById('applyCountry').value;
-    const treatment = document.getElementById('applyTreatmentSelect').value;
-    const hospital = document.getElementById('applyHospitalSelect').value;
-    const message = document.getElementById('applyMessage').value.trim();
-    const consent = document.getElementById('applyConsent').checked;
-
-    if (!name || !phone || !country || !consent) {
-      alert(isRu ? 'Пожалуйста, заполните имя, телефон, страну и согласитесь с условиями.' : 'Please enter name, phone, country and agree to terms.');
-      return;
+    // 1. Inputs & Placeholders
+    const applyName = document.getElementById('applyName');
+    if (applyName) {
+      applyName.placeholder = isRu ? 'например, Асанбек Уулу' : 'e.g. Asanbek Uulu';
     }
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = isRu ? '⏳ Отправка заявки...' : '⏳ Submitting Enquiry...';
+    const applyPhone = document.getElementById('applyPhone');
+    if (applyPhone) {
+      applyPhone.placeholder = isRu ? '+996 555 123456' : '+996 555 123456';
+    }
 
-    const enquiryData = {
-      name, phone, email, country, treatment, hospital, message, consent
-    };
+    const applyEmail = document.getElementById('applyEmail');
+    if (applyEmail) {
+      applyEmail.placeholder = isRu ? 'patient@example.com' : 'patient@example.com';
+    }
 
+    const applyMessage = document.getElementById('applyMessage');
+    if (applyMessage) {
+      applyMessage.placeholder = isRu ? 'Опишите заболевание, симптомы или вопросы к врачу...' : 'Describe symptoms, current diagnosis, or questions...';
+    }
+
+    // 2. Selects
+    populateSelect(document.getElementById('applyCountry'), isRu ? COUNTRIES_RU : COUNTRIES_EN);
+    populateSelect(document.getElementById('applyTreatmentSelect'), isRu ? TREATMENTS_RU : TREATMENTS_EN);
+    populateSelect(document.getElementById('applyHospitalSelect'), isRu ? HOSPITALS_RU : HOSPITALS_EN);
+
+    // 3. Modals dynamic labels if open
+    if (currentOpenTreatmentId) {
+      renderTreatmentDetails(currentOpenTreatmentId, isRu);
+    }
+    if (currentOpenHospitalId) {
+      renderHospitalDetails(currentOpenHospitalId, isRu);
+    }
+
+    // 4. Update treatment modal button & hospital modal button
+    const treatBtn = document.getElementById('treatmentModalApplyBtn');
+    if (treatBtn) {
+      treatBtn.textContent = isRu ? 'Оставить заявку на лечение ↗' : 'Apply for this Treatment ↗';
+    }
+    const hospBtn = document.getElementById('hospitalModalApplyBtn');
+    if (hospBtn) {
+      hospBtn.textContent = isRu ? 'Консультация в этой больнице ↗' : 'Book Consultation at this Hospital ↗';
+    }
+  }
+
+  function renderTreatmentDetails(tid, isRu) {
+    const t = (window.MEDMOST_DATA && window.MEDMOST_DATA.treatments) ? window.MEDMOST_DATA.treatments.find(item => item.id === tid) : null;
+    if (!t) return;
+    const titleEl = document.getElementById('treatmentModalTitle');
+    if (titleEl) titleEl.textContent = isRu ? t.titleRu : t.titleEn;
+
+    const imgEl = document.getElementById('treatmentModalImg');
+    if (imgEl) {
+      imgEl.src = t.image;
+      imgEl.alt = isRu ? t.titleRu : t.titleEn;
+    }
+
+    const costEl = document.getElementById('treatmentModalCost');
+    if (costEl) costEl.textContent = (isRu ? 'Индия: ' : 'India: ') + t.costIndia;
+
+    const durEl = document.getElementById('treatmentModalDuration');
+    if (durEl) durEl.textContent = (isRu ? 'Пребывание: ' : 'Stay: ') + t.stayDuration;
+
+    const descEl = document.getElementById('treatmentModalDesc');
+    if (descEl) descEl.textContent = isRu ? t.descriptionRu : t.descriptionEn;
+
+    const procs = isRu ? t.proceduresRu : t.proceduresEn;
+    const procListEl = document.getElementById('treatmentModalProcedures');
+    if (procListEl) procListEl.innerHTML = procs.map(p => '<li>' + p + '</li>').join('');
+  }
+
+  function renderHospitalDetails(hid, isRu) {
+    const h = (window.MEDMOST_DATA && window.MEDMOST_DATA.hospitals) ? window.MEDMOST_DATA.hospitals.find(item => item.id === hid) : null;
+    if (!h) return;
+    const titleEl = document.getElementById('hospitalModalTitle');
+    if (titleEl) titleEl.textContent = isRu ? (h.nameRu || h.name) : h.name;
+
+    const imgEl = document.getElementById('hospitalModalImg');
+    if (imgEl) {
+      imgEl.src = h.image;
+      imgEl.alt = isRu ? (h.nameRu || h.name) : h.name;
+    }
+
+    const cityEl = document.getElementById('hospitalModalCity');
+    if (cityEl) cityEl.textContent = '📍 ' + (isRu ? (h.cityRu || h.city) : h.city);
+
+    const accredEl = document.getElementById('hospitalModalAccred');
+    if (accredEl) accredEl.textContent = isRu ? 'Аккредитация JCI и NABH' : h.accreditation;
+
+    const bedsEl = document.getElementById('hospitalModalBeds');
+    if (bedsEl) bedsEl.textContent = isRu ? h.beds.replace('Beds', 'коек') : h.beds;
+
+    const descEl = document.getElementById('hospitalModalDesc');
+    if (descEl) descEl.textContent = isRu ? h.overviewRu : h.overviewEn;
+
+    const specs = isRu ? h.specialtiesRu : h.specialtiesEn;
+    const specsEl = document.getElementById('hospitalModalSpecialties');
+    if (specsEl) specsEl.innerHTML = specs.map(s => '<li>' + s + '</li>').join('');
+  }
+
+  window.setLang = function(l) {
+    if (l !== 'en' && l !== 'ru') l = 'en';
+    currentLang = l;
     try {
-      const res = await window.MedMostBackend.submitEnquiry(enquiryData);
-      document.getElementById('formFieldsView').style.display = 'none';
-      document.getElementById('formSuccessView').style.display = 'block';
-      document.getElementById('successRefCode').textContent = res.referenceId;
-      document.getElementById('successPatientName').textContent = name;
-      appForm.reset();
-      const listEl = document.getElementById('fileListPreview');
-      if (listEl) listEl.innerHTML = '';
-    } catch (err) {
-      console.error(err);
-      alert(isRu ? 'Ошибка отправки. Свяжитесь через WhatsApp.' : 'Submission error. Please reach out via WhatsApp.');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
-    }
-  });
-}
-</script>
+      localStorage.setItem(LANG_STORAGE_KEY, l);
+    } catch(e) {}
 
+    const isRu = (l === 'ru');
+    document.documentElement.classList.remove('preload-russian');
+    document.body.classList.toggle('russian', isRu);
+
+    if (enBtn) enBtn.classList.toggle('active', !isRu);
+    if (ruBtn) ruBtn.classList.toggle('active', isRu);
+
+    document.documentElement.lang = l;
+    document.title = isRu ? 'MEDMOST | Медицинский туризм в Индию' : 'MEDMOST | Medical Tourism to India';
+
+    updateDynamicLanguage(l);
+  };
+
+  // Attach button events
+  if (enBtn) enBtn.addEventListener('click', () => window.setLang('en'));
+  if (ruBtn) ruBtn.addEventListener('click', () => window.setLang('ru'));
+
+  // Initialize from storage or default
+  let initialLang = 'en';
+  try {
+    const saved = localStorage.getItem(LANG_STORAGE_KEY);
+    if (saved === 'ru' || saved === 'en') initialLang = saved;
+  } catch(e) {}
+  window.setLang(initialLang);
+
+  // Modal Handlers
+  window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+    document.body.style.overflow = '';
+    if (id === 'treatmentModal') currentOpenTreatmentId = null;
+    if (id === 'hospitalModal') currentOpenHospitalId = null;
+  };
+
+  window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  window.openTreatmentModal = function(tid) {
+    window.closeModal('hospitalModal');
+    window.closeModal('applyModal');
+    currentOpenTreatmentId = tid;
+    const isRu = document.body.classList.contains('russian');
+    renderTreatmentDetails(tid, isRu);
+
+    const applyBtn = document.getElementById('treatmentModalApplyBtn');
+    if (applyBtn) {
+      applyBtn.textContent = isRu ? 'Оставить заявку на лечение ↗' : 'Apply for this Treatment ↗';
+      applyBtn.onclick = function() {
+        window.closeModal('treatmentModal');
+        window.openApplyModal({ treatmentId: tid });
+      };
+    }
+    window.openModal('treatmentModal');
+  };
+
+  window.openHospitalModal = function(hid) {
+    window.closeModal('treatmentModal');
+    window.closeModal('applyModal');
+    currentOpenHospitalId = hid;
+    const isRu = document.body.classList.contains('russian');
+    renderHospitalDetails(hid, isRu);
+
+    const applyBtn = document.getElementById('hospitalModalApplyBtn');
+    if (applyBtn) {
+      applyBtn.textContent = isRu ? 'Консультация в этой больнице ↗' : 'Book Consultation at this Hospital ↗';
+      applyBtn.onclick = function() {
+        window.closeModal('hospitalModal');
+        window.openApplyModal({ hospitalId: hid });
+      };
+    }
+    window.openModal('hospitalModal');
+  };
+
+  window.openApplyModal = function(pref) {
+    pref = pref || {};
+    window.closeModal('treatmentModal');
+    window.closeModal('hospitalModal');
+    const formFields = document.getElementById('formFieldsView');
+    const formSuccess = document.getElementById('formSuccessView');
+    if (formFields) formFields.style.display = 'block';
+    if (formSuccess) formSuccess.style.display = 'none';
+
+    const titleEl = document.getElementById('applyModalTitle');
+    if (titleEl) {
+      const enText = pref.titleEn || 'Apply for Treatment in India';
+      const ruText = pref.titleRu || 'Заявка на лечение в Индии';
+      titleEl.innerHTML = `<span class="en">${enText}</span><span class="ru">${ruText}</span>`;
+    }
+
+    if (pref.treatmentId) {
+      const sel = document.getElementById('applyTreatmentSelect');
+      if (sel) sel.value = pref.treatmentId;
+    }
+    if (pref.hospitalId) {
+      const sel = document.getElementById('applyHospitalSelect');
+      if (sel) sel.value = pref.hospitalId;
+    }
+    window.openModal('applyModal');
+  };
+
+  // Close modals on backdrop click
+  document.querySelectorAll('.modal-backdrop').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target === el) {
+        el.classList.remove('active');
+        document.body.style.overflow = '';
+        currentOpenTreatmentId = null;
+        currentOpenHospitalId = null;
+      }
+    });
+  });
+
+  // File upload preview
+  const fileInput = document.getElementById('medicalReportsInput');
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      const listEl = document.getElementById('fileListPreview');
+      if (!listEl) return;
+      const files = Array.from(fileInput.files);
+      listEl.innerHTML = files.map(f => '<div>📎 ' + f.name + ' (' + Math.round(f.size/1024) + ' KB)</div>').join('');
+    });
+  }
+
+  // Application form submit with strict bilingual messaging
+  const appForm = document.getElementById('applicationForm');
+  if (appForm) {
+    appForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const isRu = document.body.classList.contains('russian');
+      const submitBtn = appForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+
+      const name = document.getElementById('applyName').value.trim();
+      const phone = document.getElementById('applyPhone').value.trim();
+      const email = document.getElementById('applyEmail').value.trim();
+      const country = document.getElementById('applyCountry').value;
+      const treatment = document.getElementById('applyTreatmentSelect').value;
+      const hospital = document.getElementById('applyHospitalSelect').value;
+      const message = document.getElementById('applyMessage').value.trim();
+      const consent = document.getElementById('applyConsent').checked;
+
+      if (!name || !phone || !country || !consent) {
+        alert(isRu ? 'Пожалуйста, заполните имя пациента, телефон, выберите страну и подтвердите согласие.' : 'Please enter patient name, phone number, select country and accept consent.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = isRu ? '⏳ Отправка заявки...' : '⏳ Submitting Application...';
+
+      const enquiryData = {
+        name, phone, email, country, treatment, hospital, message, consent
+      };
+
+      try {
+        const res = await window.MedMostBackend.submitEnquiry(enquiryData);
+        document.getElementById('formFieldsView').style.display = 'none';
+        document.getElementById('formSuccessView').style.display = 'block';
+        document.getElementById('successRefCode').textContent = res.referenceId;
+        document.querySelectorAll('.successPatientName').forEach(el => el.textContent = name);
+        appForm.reset();
+        const listEl = document.getElementById('fileListPreview');
+        if (listEl) listEl.innerHTML = '';
+      } catch (err) {
+        console.error(err);
+        alert(isRu ? 'Ошибка при отправке заявки. Пожалуйста, напишите нам напрямую в WhatsApp.' : 'Submission error. Please reach out to us directly on WhatsApp.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    });
+  }
+})();
+</script>
 </body></html>
