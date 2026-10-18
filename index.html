@@ -4002,20 +4002,49 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     try {
       const data = await window.MedMostBackend.signUp(email, password, fullName);
+
+      // 1. Verify that Supabase actually returned a user record
+      if (!data || !data.user) {
+        throw new Error(isRu 
+          ? 'Не удалось завершить регистрацию. Сервер Supabase не создал запись пользователя.' 
+          : 'Registration could not be completed. Supabase returned no user record.');
+      }
+
+      // 2. Check if user already exists (Supabase security feature: returns empty identities array when email confirmation is active)
+      if (Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        showAuthBanner(isRu 
+          ? 'Пользователь с таким email уже зарегистрирован. Пожалуйста, перейдите на вкладку «Войти».' 
+          : 'An account with this email already exists. Please switch to the Log In tab.', 'error');
+        return;
+      }
+
+      // 3. Case A: Active session created (Email Confirmation is turned OFF in Supabase)
       if (data.session) {
-        showAuthBanner(isRu ? 'Аккаунт успешно создан!' : 'Account created successfully!', 'success');
+        showAuthBanner(isRu 
+          ? 'Аккаунт успешно создан! Автоматический вход...' 
+          : 'Account created successfully! Logging you in...', 'success');
         setTimeout(() => {
           closeAuthModal();
           updateAuthHeader(data.user);
-        }, 800);
-      } else {
-        showAuthBanner(isRu ? 'Аккаунт создан! Если включено подтверждение email, проверьте входящие письма.' : 'Account registered! If email confirmation is enabled on your Supabase project, please check your inbox to confirm.', 'success');
+        }, 900);
+      } 
+      // 4. Case B: User created in Supabase auth.users, but Email Confirmation is turned ON
+      else {
+        showAuthBanner(isRu 
+          ? `Регистрация успешно принята! На ${data.user.email || email} отправлено письмо со ссылкой для активации. Пожалуйста, подтвердите email перед входом.` 
+          : `Account registered in Supabase! A verification email has been sent to ${data.user.email || email}. Please confirm your email before logging in.`, 'success');
       }
     } catch (err) {
       console.error('Signup error:', err);
       let msg = err.message || 'Registration failed';
-      if (msg.includes('User already registered')) {
+      if (msg.includes('User already registered') || msg.includes('already registered')) {
         msg = isRu ? 'Пользователь с таким email уже зарегистрирован. Пожалуйста, выполните вход.' : 'User already registered with this email. Please log in.';
+      } else if (msg.includes('Password should be at least')) {
+        msg = isRu ? 'Пароль должен содержать не менее 6 символов.' : 'Password must be at least 6 characters long.';
+      } else if (msg.includes('rate limit')) {
+        msg = isRu ? 'Слишком много запросов на отправку писем. Пожалуйста, подождите несколько минут.' : 'Email rate limit exceeded. Please wait a few minutes before trying again.';
+      } else if (msg.includes('Database error saving new user')) {
+        msg = isRu ? 'Ошибка базы данных при сохранении профиля. Убедитесь, что скрипт supabase-schema.sql выполнен в Supabase SQL Editor.' : 'Database error saving user profile. Please make sure supabase-schema.sql was run in Supabase SQL Editor.';
       }
       showAuthBanner(msg, 'error');
     } finally {

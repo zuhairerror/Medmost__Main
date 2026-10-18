@@ -5,7 +5,7 @@
 
 (function(window) {
   // Default project credentials (can be overridden by /api/auth-config, window.__MEDMOST_SUPABASE_KEY__, or localStorage)
-  const DEFAULT_URL = 'https://kpzghkicelbfjuairebt.supabase.co';
+  const DEFAULT_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
   const DEFAULT_ANON_KEY = 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
 
   const config = {
@@ -95,6 +95,17 @@
 
     getClient: getClient,
 
+    setCredentials: function(newUrl, newKey) {
+      if (newUrl && typeof newUrl === 'string') config.url = newUrl.trim();
+      if (newKey && typeof newKey === 'string') config.key = newKey.trim();
+      try {
+        if (newUrl) localStorage.setItem('MEDMOST_SUPABASE_URL', config.url);
+        if (newKey) localStorage.setItem('MEDMOST_SUPABASE_KEY', config.key);
+      } catch (e) {}
+      initSupabaseClient();
+      return this.getConfig();
+    },
+
     ready: async function() {
       if (configPromise) await configPromise;
       return getClient();
@@ -111,7 +122,7 @@
       if (configPromise) await configPromise;
       const client = getClient();
       if (!client) {
-        throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js.');
+        throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js (line 9).');
       }
 
       const { data, error } = await client.auth.signUp({
@@ -135,7 +146,7 @@
       if (configPromise) await configPromise;
       const client = getClient();
       if (!client) {
-        throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js.');
+        throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js (line 9).');
       }
 
       const { data, error } = await client.auth.signInWithPassword({
