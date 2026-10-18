@@ -3613,6 +3613,32 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         </button>
       </form>
 
+      <!-- UPDATE PASSWORD FORM (PASSWORD RECOVERY FLOW) -->
+      <form id="authUpdatePasswordForm" onsubmit="handleAuthUpdatePassword(event)" style="display: none;">
+        <div style="background:#e0f2fe; border:1px solid #bae6fd; border-radius:10px; padding:12px 14px; margin-bottom:16px; font-size:13px; color:#0369a1; line-height:1.45;">
+          <span class="en">🔑 <strong>Password Reset Verification:</strong> Enter your new password below to secure your patient account.</span>
+          <span class="ru">🔑 <strong>Сброс пароля:</strong> Введите ваш новый пароль ниже для входа в личный кабинет.</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label class="form-label">
+            <span class="en">New Password * (min 6 characters)</span>
+            <span class="ru">Новый пароль * (минимум 6 символов)</span>
+          </label>
+          <div class="password-wrap">
+            <input type="password" id="updateNewPassword" class="form-input" placeholder="••••••••" required minlength="6" autocomplete="new-password" style="padding-right: 40px;">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('updateNewPassword', this)">👁️</button>
+          </div>
+        </div>
+        <button type="submit" id="updatePasswordSubmitBtn" class="btn" style="width:100%; border-radius:99px; font-size:15px; padding:13px 20px;">
+          <span class="en">Save New Password & Enter ↗</span>
+          <span class="ru">Сохранить новый пароль и войти ↗</span>
+        </button>
+        <button type="button" class="auth-sublink" onclick="switchAuthTab('login')" style="margin-top:12px; display:block; width:100%; text-align:center;">
+          <span class="en">← Back to Log In</span>
+          <span class="ru">← Вернуться ко входу</span>
+        </button>
+      </form>
+
       <div class="auth-footer-note">
         <span class="en">🔒 Secured with Supabase PostgreSQL & Row Level Security encryption.</span>
         <span class="ru">🔒 Защищено шифрованием базы данных Supabase и политиками RLS.</span>
@@ -4081,17 +4107,28 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     const signupTab = document.getElementById('authTabSignup');
     const loginForm = document.getElementById('authLoginForm');
     const signupForm = document.getElementById('authSignupForm');
+    const updatePasswordForm = document.getElementById('authUpdatePasswordForm');
+    const tabsContainer = document.querySelector('.auth-tabs');
 
-    if (tab === 'login') {
-      if (loginTab) loginTab.classList.add('active');
-      if (signupTab) signupTab.classList.remove('active');
-      if (loginForm) loginForm.style.display = 'block';
-      if (signupForm) signupForm.style.display = 'none';
-    } else {
-      if (loginTab) loginTab.classList.remove('active');
-      if (signupTab) signupTab.classList.add('active');
+    if (tab === 'update_password') {
+      if (tabsContainer) tabsContainer.style.display = 'none';
       if (loginForm) loginForm.style.display = 'none';
-      if (signupForm) signupForm.style.display = 'block';
+      if (signupForm) signupForm.style.display = 'none';
+      if (updatePasswordForm) updatePasswordForm.style.display = 'block';
+    } else {
+      if (tabsContainer) tabsContainer.style.display = 'flex';
+      if (updatePasswordForm) updatePasswordForm.style.display = 'none';
+      if (tab === 'login') {
+        if (loginTab) loginTab.classList.add('active');
+        if (signupTab) signupTab.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'block';
+        if (signupForm) signupForm.style.display = 'none';
+      } else {
+        if (loginTab) loginTab.classList.remove('active');
+        if (signupTab) signupTab.classList.add('active');
+        if (loginForm) loginForm.style.display = 'none';
+        if (signupForm) signupForm.style.display = 'block';
+      }
     }
   };
 
@@ -4249,14 +4286,65 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   window.handlePasswordReset = async function() {
     const isRu = document.body.classList.contains('russian');
-    const email = prompt(isRu ? 'Введите ваш email для сброса пароля:' : 'Enter your registered email address to receive password reset instructions:');
+    const existingEmail = (document.getElementById('loginEmail') ? document.getElementById('loginEmail').value : '').trim();
+    const email = prompt(
+      isRu 
+        ? 'Введите ваш email для получения ссылки на сброс пароля:' 
+        : 'Enter your registered email address to receive password reset instructions:',
+      existingEmail
+    );
     if (!email || !email.trim()) return;
+
+    hideAuthBanner();
+    showAuthBanner(isRu ? '⏳ Отправка ссылки для сброса...' : '⏳ Sending password reset link...', 'success');
 
     try {
       await window.MedMostBackend.resetPassword(email.trim());
-      alert(isRu ? 'Ссылка для сброса пароля отправлена на ваш email!' : 'Password reset link sent to your email!');
+      showAuthBanner(
+        isRu 
+          ? `✓ Ссылка для сброса пароля отправлена на ${email.trim()}! Проверьте почту и перейдите по ссылке.` 
+          : `✓ Password reset link sent to ${email.trim()}! Please click the link in your email to reset your password.`, 
+        'success'
+      );
     } catch (err) {
-      alert(err.message || 'Error sending password reset email');
+      console.error('Password reset error:', err);
+      showAuthBanner(err.message || 'Error sending password reset email', 'error');
+    }
+  };
+
+  window.handleAuthUpdatePassword = async function(e) {
+    e.preventDefault();
+    hideAuthBanner();
+    const isRu = document.body.classList.contains('russian');
+    const newPassword = document.getElementById('updateNewPassword').value;
+    const submitBtn = document.getElementById('updatePasswordSubmitBtn');
+
+    if (!newPassword || newPassword.length < 6) {
+      showAuthBanner(isRu ? 'Пароль должен содержать не менее 6 символов.' : 'Password must be at least 6 characters long.', 'error');
+      return;
+    }
+
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = isRu ? '⏳ Сохранение...' : '⏳ Updating password...';
+
+    try {
+      await window.MedMostBackend.updatePassword(newPassword);
+      showAuthBanner(isRu ? 'Пароль успешно обновлен! Выполняется вход...' : 'Password updated successfully! Logging you in...', 'success');
+      setTimeout(async () => {
+        closeAuthModal();
+        const user = await window.MedMostBackend.getCurrentUser();
+        updateAuthHeader(user);
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }, 1000);
+    } catch (err) {
+      console.error('Update password error:', err);
+      showAuthBanner(err.message || 'Error updating password', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
     }
   };
 
@@ -4370,7 +4458,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
   };
 
-  // Check auth state on load
+  // Check auth state on load and handle confirmation/reset redirect tokens
   setTimeout(async () => {
     try {
       const user = await window.MedMostBackend.getCurrentUser();
@@ -4379,9 +4467,48 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       console.warn('Initial auth check notice:', e);
     }
 
+    // 1. Listen for Supabase auth state transitions
     window.MedMostBackend.onAuthStateChange(function(event, session) {
       updateAuthHeader(session ? session.user : null);
+      if (event === 'PASSWORD_RECOVERY') {
+        openAuthModal('update_password');
+      } else if (event === 'SIGNED_IN') {
+        const u = session ? session.user : null;
+        if (u) updateAuthHeader(u);
+      }
     });
+
+    // 2. Inspect URL hash and query parameters for email verification or password reset redirects
+    try {
+      const hash = window.location.hash || '';
+      const search = window.location.search || '';
+      const params = new URLSearchParams(hash.replace(/^#/, '?') || search);
+      const isRu = document.body.classList.contains('russian');
+
+      if (params.get('error') || params.get('error_description')) {
+        const errorDesc = params.get('error_description') || params.get('error') || '';
+        const userFriendlyDesc = errorDesc.toLowerCase().includes('expired')
+          ? (isRu ? 'Срок действия ссылки истек. Пожалуйста, запросите новую ссылку.' : 'The link has expired or is invalid. Please request a new one.')
+          : errorDesc;
+        openAuthModal('login');
+        setTimeout(() => showAuthBanner(userFriendlyDesc, 'error'), 300);
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      } else if (hash.includes('type=recovery') || params.get('type') === 'recovery') {
+        setTimeout(() => openAuthModal('update_password'), 350);
+      } else if (hash.includes('type=signup') || hash.includes('type=email_verification') || params.get('type') === 'signup') {
+        setTimeout(() => {
+          showAuthBanner(isRu ? '✓ Email успешно подтвержден! Вы вошли в систему.' : '✓ Email verified successfully! You are now logged in.', 'success');
+          openAuthModal('login');
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+        }, 350);
+      }
+    } catch (e) {
+      console.warn('URL redirect param parsing notice:', e);
+    }
   }, 250);
 })();
 </script>

@@ -25,6 +25,25 @@
     }
   }
 
+  // Canonical production site URL to prevent redirects falling back to localhost:3000
+  const PRODUCTION_SITE_URL = 'https://medmost.vercel.app';
+
+  /**
+   * Resolves the production-ready redirect URL for email verification and password reset.
+   * If running on live Vercel or custom domain, uses current window.location.origin.
+   * If running locally or on file://, defaults to https://medmost.vercel.app so emails
+   * sent to real users never redirect to http://localhost:3000.
+   */
+  function getAuthRedirectUrl() {
+    if (typeof window !== 'undefined' && window.location) {
+      const origin = window.location.origin;
+      if (origin && origin.startsWith('http') && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
+        return origin;
+      }
+    }
+    return PRODUCTION_SITE_URL;
+  }
+
   // Clear any corrupted localStorage entry from prior runs
   try {
     const cachedUrl = localStorage.getItem('MEDMOST_SUPABASE_URL');
@@ -153,11 +172,14 @@
         throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js (line 9).');
       }
 
+      const redirectUrl = getAuthRedirectUrl();
+
       try {
         const { data, error } = await client.auth.signUp({
           email: email.trim(),
           password: password,
           options: {
+            emailRedirectTo: redirectUrl,
             data: {
               full_name: (fullName || '').trim()
             }
@@ -219,16 +241,39 @@
     },
 
     /**
-     * Send password reset email
+     * Send password reset email with production redirect URL
      */
     resetPassword: async function(email) {
+      if (configPromise) await configPromise;
       const client = getClient();
       if (!client) throw new Error('Supabase client unavailable.');
+      const redirectUrl = getAuthRedirectUrl();
       const { data, error } = await client.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: window.location.origin
+        redirectTo: redirectUrl
       });
       if (error) throw error;
       return data;
+    },
+
+    /**
+     * Update current user's password (used in password recovery flow)
+     */
+    updatePassword: async function(newPassword) {
+      if (configPromise) await configPromise;
+      const client = getClient();
+      if (!client) throw new Error('Supabase client unavailable.');
+      const { data, error } = await client.auth.updateUser({
+        password: newPassword
+      });
+      if (error) throw error;
+      return data;
+    },
+
+    /**
+     * Returns the active production redirect URL
+     */
+    getRedirectUrl: function() {
+      return getAuthRedirectUrl();
     },
 
     /**
