@@ -20,6 +20,9 @@ function cleanSupabaseUrl(rawUrl) {
   let url = rawUrl.trim().replace(/^["']|["']$/g, '');
   if (!url) return DEFAULT_SUPABASE_URL;
 
+  // Auto-correct common transposition typo (kpzghk -> kpzgkh)
+  url = url.replace('kpzghkicelbfjuairebt', 'kpzgkhicelbfjuairebt');
+
   // Add protocol if missing
   if (!/^https?:\/\//i.test(url)) {
     url = 'https://' + url;

@@ -8,8 +8,33 @@
   const DEFAULT_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
   const DEFAULT_ANON_KEY = 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
 
+  function normalizeUrl(rawUrl) {
+    if (!rawUrl || typeof rawUrl !== 'string') return DEFAULT_URL;
+    let url = rawUrl.trim().replace(/^["']|["']$/g, '');
+    if (!url) return DEFAULT_URL;
+    // Auto-correct common transposition typo (kpzghk -> kpzgkh)
+    url = url.replace('kpzghkicelbfjuairebt', 'kpzgkhicelbfjuairebt');
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
+    try {
+      const parsed = new URL(url);
+      return parsed.origin;
+    } catch (e) {
+      return url.replace(/\/rest\/v1\/?.*$/i, '').replace(/\/auth\/v1\/?.*$/i, '').replace(/\/+$/, '');
+    }
+  }
+
+  // Clear any corrupted localStorage entry from prior runs
+  try {
+    const cachedUrl = localStorage.getItem('MEDMOST_SUPABASE_URL');
+    if (cachedUrl && cachedUrl.includes('kpzghk')) {
+      localStorage.removeItem('MEDMOST_SUPABASE_URL');
+    }
+  } catch (e) {}
+
   const config = {
-    url: (window.__MEDMOST_SUPABASE_URL__ || localStorage.getItem('MEDMOST_SUPABASE_URL') || DEFAULT_URL).trim(),
+    url: normalizeUrl(window.__MEDMOST_SUPABASE_URL__ || localStorage.getItem('MEDMOST_SUPABASE_URL') || DEFAULT_URL),
     key: (window.__MEDMOST_SUPABASE_KEY__ || localStorage.getItem('MEDMOST_SUPABASE_KEY') || DEFAULT_ANON_KEY).trim()
   };
 
@@ -55,9 +80,12 @@
       if (res.ok) {
         const data = await res.json();
         let updated = false;
-        if (data.supabaseUrl && typeof data.supabaseUrl === 'string' && data.supabaseUrl.trim() !== config.url) {
-          config.url = data.supabaseUrl.trim();
-          updated = true;
+        if (data.supabaseUrl && typeof data.supabaseUrl === 'string') {
+          const cleanUrl = normalizeUrl(data.supabaseUrl);
+          if (cleanUrl !== config.url) {
+            config.url = cleanUrl;
+            updated = true;
+          }
         }
         if (data.supabaseAnonKey && isKeyConfigured(data.supabaseAnonKey) && data.supabaseAnonKey.trim() !== config.key) {
           config.key = data.supabaseAnonKey.trim();
@@ -125,18 +153,26 @@
         throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js (line 9).');
       }
 
-      const { data, error } = await client.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          data: {
-            full_name: (fullName || '').trim()
+      try {
+        const { data, error } = await client.auth.signUp({
+          email: email.trim(),
+          password: password,
+          options: {
+            data: {
+              full_name: (fullName || '').trim()
+            }
           }
-        }
-      });
+        });
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (err) {
+        if (err.message && err.message.toLowerCase().includes('failed to fetch')) {
+          console.error('Network fetch error contacting Supabase URL:', config.url, err);
+          throw new Error(`Failed to fetch: Cannot reach Supabase at ${config.url}. Please ensure your Vercel SUPABASE_URL environment variable is set to https://kpzgkhicelbfjuairebt.supabase.co and that your anon key is valid.`);
+        }
+        throw err;
+      }
     },
 
     /**
@@ -149,13 +185,21 @@
         throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js (line 9).');
       }
 
-      const { data, error } = await client.auth.signInWithPassword({
-        email: email.trim(),
-        password: password
-      });
+      try {
+        const { data, error } = await client.auth.signInWithPassword({
+          email: email.trim(),
+          password: password
+        });
 
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } catch (err) {
+        if (err.message && err.message.toLowerCase().includes('failed to fetch')) {
+          console.error('Network fetch error contacting Supabase URL:', config.url, err);
+          throw new Error(`Failed to fetch: Cannot reach Supabase at ${config.url}. Please ensure your Vercel SUPABASE_URL environment variable is set to https://kpzgkhicelbfjuairebt.supabase.co and that your anon key is valid.`);
+        }
+        throw err;
+      }
     },
 
     /**

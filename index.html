@@ -3965,7 +3965,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     } catch (err) {
       console.error('Login error:', err);
       let msg = err.message || 'Login failed';
-      if (msg.includes('Invalid login credentials')) {
+      if (msg.includes('Failed to fetch') || msg.toLowerCase().includes('failed to fetch')) {
+        msg = isRu 
+          ? 'Ошибка подключения к Supabase («Failed to fetch»). Проверьте URL проекта (kpzgkhicelbfjuairebt.supabase.co) и переменные окружения в Vercel.' 
+          : 'Unable to connect to Supabase («Failed to fetch»). Please verify that SUPABASE_URL in Vercel is https://kpzgkhicelbfjuairebt.supabase.co and that your anon key is set.';
+      } else if (msg.includes('Invalid login credentials')) {
         msg = isRu ? 'Неверный адрес электронной почты или пароль.' : 'Invalid email address or password.';
       } else if (msg.includes('Email not confirmed')) {
         msg = isRu ? 'Пожалуйста, подтвердите email по ссылке из письма.' : 'Please verify your email via the confirmation link sent to your inbox.';
@@ -4037,7 +4041,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     } catch (err) {
       console.error('Signup error:', err);
       let msg = err.message || 'Registration failed';
-      if (msg.includes('User already registered') || msg.includes('already registered')) {
+      if (msg.includes('Failed to fetch') || msg.toLowerCase().includes('failed to fetch')) {
+        msg = isRu 
+          ? 'Ошибка подключения к Supabase («Failed to fetch»). Проверьте URL проекта (kpzgkhicelbfjuairebt.supabase.co) и переменные окружения в Vercel.' 
+          : 'Unable to connect to Supabase («Failed to fetch»). Please verify that SUPABASE_URL in Vercel is https://kpzgkhicelbfjuairebt.supabase.co and that your anon key is set.';
+      } else if (msg.includes('User already registered') || msg.includes('already registered')) {
         msg = isRu ? 'Пользователь с таким email уже зарегистрирован. Пожалуйста, выполните вход.' : 'User already registered with this email. Please log in.';
       } else if (msg.includes('Password should be at least')) {
         msg = isRu ? 'Пароль должен содержать не менее 6 символов.' : 'Password must be at least 6 characters long.';

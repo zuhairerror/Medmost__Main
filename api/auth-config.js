@@ -18,6 +18,9 @@ function cleanSupabaseUrl(rawUrl) {
   let url = rawUrl.trim().replace(/^["']|["']$/g, '');
   if (!url) return DEFAULT_SUPABASE_URL;
 
+  // Auto-correct common transposition typo (kpzghk -> kpzgkh)
+  url = url.replace('kpzghkicelbfjuairebt', 'kpzgkhicelbfjuairebt');
+
   // Add protocol if missing
   if (!/^https?:\/\//i.test(url)) {
     url = 'https://' + url;
@@ -39,10 +42,11 @@ function cleanApiKey(rawKey) {
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS configuration that complies with strict browser security
+  const origin = req.headers && req.headers.origin ? req.headers.origin : '*';
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -59,6 +63,6 @@ module.exports = async function handler(req, res) {
   return res.status(200).json({
     supabaseUrl: supabaseUrl,
     supabaseAnonKey: supabaseAnonKey,
-    configured: Boolean(supabaseAnonKey)
+    configured: Boolean(supabaseAnonKey && supabaseAnonKey.length > 20)
   });
 };
