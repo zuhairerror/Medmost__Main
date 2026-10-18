@@ -3869,6 +3869,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
       }
+    });
+  }
 
   // ========================================================================
   // SUPABASE AUTHENTICATION CONTROLLER
@@ -4158,9 +4160,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       updateAuthHeader(session ? session.user : null);
     });
   }, 250);
-
-    });
-  }
 })();
 </script>
 </body></html>

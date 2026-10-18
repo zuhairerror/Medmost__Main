@@ -4,8 +4,8 @@
  */
 
 (function(window) {
-  // Default project credentials (can be overridden by window.__MEDMOST_SUPABASE_KEY__ or localStorage)
-  const DEFAULT_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
+  // Default project credentials (can be overridden by /api/auth-config, window.__MEDMOST_SUPABASE_KEY__, or localStorage)
+  const DEFAULT_URL = 'https://kpzghkicelbfjuairebt.supabase.co';
   const DEFAULT_ANON_KEY = 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
 
   const config = {
@@ -17,27 +17,10 @@
     return Boolean(k && typeof k === 'string' && !k.startsWith('YOUR_') && k.length > 20);
   }
 
-  // Initialize official Supabase client if SDK is loaded and key is set
   let supabaseClient = null;
-  try {
-    if (window.supabase && typeof window.supabase.createClient === 'function' && isKeyConfigured(config.key)) {
-      supabaseClient = window.supabase.createClient(config.url, config.key, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
-      });
-      console.log('✅ [MEDMOST] Supabase client initialized successfully:', config.url);
-    } else if (!isKeyConfigured(config.key)) {
-      console.info('ℹ️ [MEDMOST] Supabase client awaiting Publishable / Anon Key in js/supabase-client.js.');
-    }
-  } catch (err) {
-    console.error('❌ [MEDMOST] Error initializing Supabase client:', err);
-  }
 
-  function getClient() {
-    if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function' && isKeyConfigured(config.key)) {
+  function initSupabaseClient() {
+    if (window.supabase && typeof window.supabase.createClient === 'function' && isKeyConfigured(config.key)) {
       try {
         supabaseClient = window.supabase.createClient(config.url, config.key, {
           auth: {
@@ -46,9 +29,57 @@
             detectSessionInUrl: true
           }
         });
-      } catch (e) {
-        console.error('❌ [MEDMOST] getClient initialization error:', e);
+        console.log('✅ [MEDMOST] Supabase client initialized:', config.url);
+        window.dispatchEvent(new CustomEvent('medmost:supabase-ready', {
+          detail: { url: config.url, configured: true }
+        }));
+      } catch (err) {
+        console.error('❌ [MEDMOST] Error initializing Supabase client:', err);
       }
+    } else if (!isKeyConfigured(config.key)) {
+      console.info('ℹ️ [MEDMOST] Supabase client awaiting Publishable / Anon Key from server environment or js/supabase-client.js.');
+    }
+  }
+
+  // Auto-fetch public configuration from server environment variables (/api/auth-config)
+  let configPromise = null;
+  async function fetchServerConfig() {
+    if (typeof window === 'undefined' || !window.location) return;
+    if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') return;
+
+    try {
+      const res = await fetch('/api/auth-config', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        let updated = false;
+        if (data.supabaseUrl && typeof data.supabaseUrl === 'string' && data.supabaseUrl.trim() !== config.url) {
+          config.url = data.supabaseUrl.trim();
+          updated = true;
+        }
+        if (data.supabaseAnonKey && isKeyConfigured(data.supabaseAnonKey) && data.supabaseAnonKey.trim() !== config.key) {
+          config.key = data.supabaseAnonKey.trim();
+          updated = true;
+        }
+        if (updated || (!supabaseClient && isKeyConfigured(config.key))) {
+          initSupabaseClient();
+        }
+      }
+    } catch (e) {
+      // Quiet fallback when running offline or without serverless runtime
+    }
+  }
+
+  configPromise = fetchServerConfig();
+
+  // Try initial synchronous initialization if key is already locally available
+  initSupabaseClient();
+
+  function getClient() {
+    if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function' && isKeyConfigured(config.key)) {
+      initSupabaseClient();
     }
     return supabaseClient;
   }
@@ -57,12 +88,17 @@
     getConfig: function() {
       return {
         url: config.url,
-        hasKey: Boolean(config.key),
-        isProductionReady: Boolean(config.url && config.key)
+        hasKey: isKeyConfigured(config.key),
+        isProductionReady: Boolean(config.url && isKeyConfigured(config.key))
       };
     },
 
     getClient: getClient,
+
+    ready: async function() {
+      if (configPromise) await configPromise;
+      return getClient();
+    },
 
     // ========================================================================
     // AUTHENTICATION METHODS
@@ -72,9 +108,10 @@
      * Sign up a new patient with email, password, and optional full name.
      */
     signUp: async function(email, password, fullName) {
+      if (configPromise) await configPromise;
       const client = getClient();
       if (!client) {
-        throw new Error('Supabase SDK not loaded. Please check your internet connection.');
+        throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js.');
       }
 
       const { data, error } = await client.auth.signUp({
@@ -95,9 +132,10 @@
      * Log in an existing patient with email and password.
      */
     signIn: async function(email, password) {
+      if (configPromise) await configPromise;
       const client = getClient();
       if (!client) {
-        throw new Error('Supabase SDK not loaded. Please check your internet connection.');
+        throw new Error('Supabase publishable key is not configured yet. Please configure SUPABASE_ANON_KEY in your server environment variables or in js/supabase-client.js.');
       }
 
       const { data, error } = await client.auth.signInWithPassword({
@@ -142,6 +180,7 @@
      * Get the currently logged in user (from session or cached state)
      */
     getCurrentUser: async function() {
+      if (configPromise) await configPromise;
       const client = getClient();
       if (!client) {
         const cached = localStorage.getItem('medmost_current_user');
@@ -164,19 +203,42 @@
      * Listen for authentication state changes (SIGNED_IN, SIGNED_OUT, etc.)
      */
     onAuthStateChange: function(callback) {
-      const client = getClient();
-      if (!client) return { unsubscribe: function() {} };
-      const { data: { subscription } } = client.auth.onAuthStateChange(function(event, session) {
-        if (session && session.user) {
-          localStorage.setItem('medmost_current_user', JSON.stringify(session.user));
-        } else if (event === 'SIGNED_OUT') {
-          localStorage.removeItem('medmost_current_user');
-        }
-        if (typeof callback === 'function') {
-          callback(event, session);
-        }
+      let sub = null;
+      const attach = function(c) {
+        if (!c || sub) return;
+        const res = c.auth.onAuthStateChange(function(event, session) {
+          if (session && session.user) {
+            localStorage.setItem('medmost_current_user', JSON.stringify(session.user));
+          } else if (event === 'SIGNED_OUT') {
+            localStorage.removeItem('medmost_current_user');
+          }
+          if (typeof callback === 'function') {
+            callback(event, session);
+          }
+        });
+        sub = res.data ? res.data.subscription : res;
+      };
+
+      const directClient = getClient();
+      if (directClient) {
+        attach(directClient);
+      } else if (configPromise) {
+        configPromise.then(() => {
+          attach(getClient());
+        });
+      }
+
+      window.addEventListener('medmost:supabase-ready', () => {
+        attach(getClient());
       });
-      return subscription;
+
+      return {
+        unsubscribe: function() {
+          if (sub && typeof sub.unsubscribe === 'function') {
+            sub.unsubscribe();
+          }
+        }
+      };
     },
 
     // ========================================================================

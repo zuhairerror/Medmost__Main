@@ -5,7 +5,7 @@
  * Never exposes service_role key or database secrets!
  */
 
-const DEFAULT_SUPABASE_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
+const DEFAULT_SUPABASE_URL = 'https://kpzghkicelbfjuairebt.supabase.co';
 const DEFAULT_ANON_KEY = '';
 
 /**
