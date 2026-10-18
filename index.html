@@ -31,6 +31,14 @@ header{background:#fff;border-bottom:3px solid var(--gold)}.top{display:flex;ali
   display: initial;
 }
 
+/* Base display rules: preserve proper block vs inline semantics */
+h1.en, h2.en, h3.en, h4.en, p.en, div.en, ul.en, li.en {
+  display: block;
+}
+span.en, strong.en, b.en, em.en, a.en {
+  display: inline;
+}
+
 body.russian .en,
 html.preload-russian .en {
   display: none !important;
@@ -1357,19 +1365,32 @@ html, body {
     font-size: 12px;
   }
 
+  /* Table Layout: Proportional sizing without text overlap */
   .cost-comparison-tbl {
-    min-width: 660px;
+    min-width: 590px;
+    table-layout: fixed;
+    width: 100%;
   }
+
+  /* Sticky Procedure Column: 140px width */
   .cost-comparison-tbl thead th.th-proc,
   .proc-cell {
     position: sticky;
     left: 0;
     z-index: 3;
-    box-shadow: 3px 0 8px rgba(6, 43, 75, 0.12);
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+    box-shadow: 4px 0 10px rgba(6, 43, 75, 0.16);
+    padding: 8px 10px;
+    vertical-align: middle;
   }
   .cost-comparison-tbl thead th.th-proc {
     z-index: 4;
     background: #062b4b;
+    padding-left: 12px;
+    font-size: 11px;
+    letter-spacing: .03em;
   }
   .proc-cell {
     background: #ffffff;
@@ -1378,12 +1399,71 @@ html, body {
     background: #f1f8fc !important;
   }
 
-  .th-proc-en { font-size: 12px; }
-  .th-proc-ru { font-size: 10.5px; }
-  .proc-thumb { width: 34px; height: 34px; border-radius: 6px; }
-  .proc-en-name, .proc-ru-name { font-size: 13px; }
-  .proc-en-sub, .proc-ru-sub { font-size: 10.5px; }
-  .price-val { font-size: 13px; }
+  .proc-cell-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .proc-thumb {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .proc-text {
+    min-width: 0;
+    line-height: 1.25;
+  }
+  .proc-en-name, .proc-ru-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: #062b4b;
+    line-height: 1.22;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .proc-en-sub, .proc-ru-sub {
+    font-size: 10px;
+    color: #64748b;
+    line-height: 1.15;
+    margin-top: 2px;
+    white-space: normal;
+  }
+
+  /* Country price columns: generous 112px width so prices never overlap! */
+  .cost-comparison-tbl thead th.th-col,
+  .price-cell {
+    width: 112px;
+    min-width: 112px;
+    max-width: 115px;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .th-col .th-flag svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 3px;
+  }
+  .th-country-en, .th-country-ru {
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .02em;
+  }
+  .th-city-en {
+    font-size: 9.5px;
+  }
+
+  .price-cell {
+    padding: 11px 6px;
+    white-space: nowrap;
+  }
+  .price-val {
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: -.01em;
+  }
 
   .cost-features-bar {
     grid-template-columns: 1fr;
@@ -1442,36 +1522,99 @@ html, body {
     justify-content: center;
   }
 
-  /* Hero on mobile */
+  /* ------------------------------------------------------------------------
+     HERO ON MOBILE: Clean Stacked Layout (Full Photo Visible, No Text on Faces)
+     ------------------------------------------------------------------------ */
   .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #031c30 0%, #062b4b 55%, #053358 100%);
     min-height: auto;
+    padding: 14px 0 24px;
+    overflow: hidden;
   }
+
+  /* Full hero image displayed with zero text collision */
   .hero-image {
-    height: 430px;
-    object-position: 65% center;
+    width: min(1180px, 92%);
+    margin: 0 auto 16px;
+    height: 220px;
+    object-fit: cover;
+    object-position: center 20%;
+    border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    display: block;
+    position: static;
   }
+
   .hero-overlay {
-    background: linear-gradient(180deg, rgba(3,36,65,.93) 0%, rgba(3,36,65,.76) 55%, rgba(3,36,65,.93) 100%);
-    align-items: center;
+    position: static;
+    background: none;
+    display: block;
+    width: 100%;
+    padding: 0;
   }
+
   .hero-copy {
-    padding: 24px 0;
+    padding: 0;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .hero-copy .eyebrow {
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 850;
+    letter-spacing: .08em;
+    color: #f6d388;
+    background: rgba(216, 173, 86, 0.18);
+    border: 1px solid rgba(216, 173, 86, 0.4);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+    width: fit-content;
+  }
+  .hero-copy .eyebrow.en {
+    display: inline-flex;
+  }
+  body.russian .hero-copy .eyebrow.en,
+  html.preload-russian .hero-copy .eyebrow.en {
+    display: none !important;
+  }
+  body.russian .hero-copy .eyebrow.ru,
+  html.preload-russian .hero-copy .eyebrow.ru {
+    display: inline-flex !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(23px, 6.2vw, 30px);
+    line-height: 1.2;
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-weight: 850;
+    letter-spacing: -.02em;
+  }
+
+  .hero p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #e2eaf0;
+    margin: 0 0 18px;
     max-width: 100%;
   }
-  .hero h1 {
-    font-size: clamp(25px, 6.8vw, 34px);
-    line-height: 1.15;
-    margin: 8px 0 12px;
-  }
-  .hero p {
-    font-size: 14.5px;
-    margin-bottom: 18px;
-  }
-  .btn {
+
+  .hero .btn {
     width: 100%;
-    max-width: 320px;
-    padding: 13px 20px;
-    font-size: 14.5px;
+    max-width: 100%;
+    justify-content: center;
+    padding: 14px 22px;
+    font-size: 15px;
+    font-weight: 850;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0, 139, 120, 0.45);
   }
 
   /* Pillars */
