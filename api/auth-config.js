@@ -59,10 +59,12 @@ module.exports = async function handler(req, res) {
 
   const supabaseUrl = cleanSupabaseUrl(process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL);
   const supabaseAnonKey = cleanApiKey(process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY);
+  const siteUrl = (process.env.SITE_URL || 'https://www.medmost.in').replace(/\/+$/, '');
 
   return res.status(200).json({
     supabaseUrl: supabaseUrl,
     supabaseAnonKey: supabaseAnonKey,
+    siteUrl: siteUrl,
     configured: Boolean(supabaseAnonKey && supabaseAnonKey.length > 20)
   });
 };

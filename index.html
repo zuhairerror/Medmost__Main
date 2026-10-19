@@ -3619,7 +3619,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
           <span class="en">🔑 <strong>Password Reset Verification:</strong> Enter your new password below to secure your patient account.</span>
           <span class="ru">🔑 <strong>Сброс пароля:</strong> Введите ваш новый пароль ниже для входа в личный кабинет.</span>
         </div>
-        <div class="form-group" style="margin-bottom: 18px;">
+        <div class="form-group" style="margin-bottom: 14px;">
           <label class="form-label">
             <span class="en">New Password * (min 6 characters)</span>
             <span class="ru">Новый пароль * (минимум 6 символов)</span>
@@ -3627,6 +3627,16 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
           <div class="password-wrap">
             <input type="password" id="updateNewPassword" class="form-input" placeholder="••••••••" required minlength="6" autocomplete="new-password" style="padding-right: 40px;">
             <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('updateNewPassword', this)">👁️</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label class="form-label">
+            <span class="en">Confirm New Password *</span>
+            <span class="ru">Подтвердите новый пароль *</span>
+          </label>
+          <div class="password-wrap">
+            <input type="password" id="updateConfirmPassword" class="form-input" placeholder="••••••••" required minlength="6" autocomplete="new-password" style="padding-right: 40px;">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('updateConfirmPassword', this)">👁️</button>
           </div>
         </div>
         <button type="submit" id="updatePasswordSubmitBtn" class="btn" style="width:100%; border-radius:99px; font-size:15px; padding:13px 20px;">
@@ -4317,10 +4327,16 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     hideAuthBanner();
     const isRu = document.body.classList.contains('russian');
     const newPassword = document.getElementById('updateNewPassword').value;
+    const confirmPassword = document.getElementById('updateConfirmPassword') ? document.getElementById('updateConfirmPassword').value : newPassword;
     const submitBtn = document.getElementById('updatePasswordSubmitBtn');
 
     if (!newPassword || newPassword.length < 6) {
       showAuthBanner(isRu ? 'Пароль должен содержать не менее 6 символов.' : 'Password must be at least 6 characters long.', 'error');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showAuthBanner(isRu ? 'Пароли не совпадают. Пожалуйста, проверьте ввод.' : 'Passwords do not match. Please ensure both fields match.', 'error');
       return;
     }
 
@@ -4330,7 +4346,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     try {
       await window.MedMostBackend.updatePassword(newPassword);
-      showAuthBanner(isRu ? 'Пароль успешно обновлен! Выполняется вход...' : 'Password updated successfully! Logging you in...', 'success');
+      showAuthBanner(isRu ? '✓ Пароль успешно обновлен! Выполняется вход...' : '✓ Password updated successfully! Logging you in...', 'success');
       setTimeout(async () => {
         closeAuthModal();
         const user = await window.MedMostBackend.getCurrentUser();
@@ -4338,7 +4354,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         if (window.history && window.history.replaceState) {
           window.history.replaceState(null, '', window.location.pathname);
         }
-      }, 1000);
+      }, 1200);
     } catch (err) {
       console.error('Update password error:', err);
       showAuthBanner(err.message || 'Error updating password', 'error');
@@ -4495,8 +4511,9 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         if (window.history && window.history.replaceState) {
           window.history.replaceState(null, '', window.location.pathname);
         }
-      } else if (hash.includes('type=recovery') || params.get('type') === 'recovery') {
-        setTimeout(() => openAuthModal('update_password'), 350);
+      } else if (hash.includes('type=recovery') || params.get('type') === 'recovery' || (hash.includes('access_token') && hash.includes('recovery'))) {
+        // Forward directly to dedicated password recovery page preserving all session tokens
+        window.location.replace('/reset-password.html' + window.location.search + window.location.hash);
       } else if (hash.includes('type=signup') || hash.includes('type=email_verification') || params.get('type') === 'signup') {
         setTimeout(() => {
           showAuthBanner(isRu ? '✓ Email успешно подтвержден! Вы вошли в систему.' : '✓ Email verified successfully! You are now logged in.', 'success');

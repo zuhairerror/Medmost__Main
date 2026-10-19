@@ -25,23 +25,26 @@
     }
   }
 
-  // Canonical production site URL to prevent redirects falling back to localhost:3000
-  const PRODUCTION_SITE_URL = 'https://medmost.vercel.app';
+  // Canonical live production site URL to prevent redirects falling back to localhost:3000
+  const PRODUCTION_SITE_URL = 'https://www.medmost.in';
 
   /**
    * Resolves the production-ready redirect URL for email verification and password reset.
-   * If running on live Vercel or custom domain, uses current window.location.origin.
-   * If running locally or on file://, defaults to https://medmost.vercel.app so emails
+   * If running on live custom domain (www.medmost.in, medmost.in, or vercel.app), uses current window.location.origin.
+   * If running locally or on file://, defaults to https://www.medmost.in so emails
    * sent to real users never redirect to http://localhost:3000.
    */
-  function getAuthRedirectUrl() {
+  function getAuthRedirectUrl(path = '') {
+    let base = PRODUCTION_SITE_URL;
     if (typeof window !== 'undefined' && window.location) {
       const origin = window.location.origin;
       if (origin && origin.startsWith('http') && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
-        return origin;
+        base = origin;
       }
     }
-    return PRODUCTION_SITE_URL;
+    const cleanBase = base.replace(/\/+$/, '');
+    const cleanPath = path ? '/' + path.replace(/^\/+/, '') : '';
+    return cleanBase + cleanPath;
   }
 
   // Clear any corrupted localStorage entry from prior runs
@@ -243,11 +246,13 @@
     /**
      * Send password reset email with production redirect URL
      */
-    resetPassword: async function(email) {
+    resetPassword: async function(email, customRedirectUrl) {
       if (configPromise) await configPromise;
       const client = getClient();
       if (!client) throw new Error('Supabase client unavailable.');
-      const redirectUrl = getAuthRedirectUrl();
+      // Point directly to dedicated recovery page on production domain https://www.medmost.in/reset-password.html
+      const redirectUrl = customRedirectUrl || getAuthRedirectUrl('reset-password.html');
+      console.log('Sending password reset email with redirectTo:', redirectUrl);
       const { data, error } = await client.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: redirectUrl
       });
@@ -272,8 +277,8 @@
     /**
      * Returns the active production redirect URL
      */
-    getRedirectUrl: function() {
-      return getAuthRedirectUrl();
+    getRedirectUrl: function(path = '') {
+      return getAuthRedirectUrl(path);
     },
 
     /**
