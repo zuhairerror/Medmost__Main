@@ -1,5 +1,6 @@
 -- ==========================================================================
 -- MEDMOST - Supabase Row Level Security (RLS) & Auth Schema Setup
+-- Hardened against IDOR, Data Tampering, and Unauthorized Record Disclosure
 -- Run this in your Supabase SQL Editor:
 -- Supabase Dashboard > SQL Editor > New query > Paste & Run
 -- ==========================================================================
@@ -44,32 +45,52 @@ DROP POLICY IF EXISTS "Allow coordinators to view consultations" ON public.consu
 DROP POLICY IF EXISTS "Allow staff to view consultations" ON public.consultations;
 DROP POLICY IF EXISTS "Allow users to view own consultations" ON public.consultations;
 DROP POLICY IF EXISTS "Users can view own consultations" ON public.consultations;
+DROP POLICY IF EXISTS "Users can claim own unlinked consultations" ON public.consultations;
 
--- 5. NARROWLY SCOPED INSERT POLICY for public / anonymous / authenticated patients
--- Only allows INSERT with validation. Strictly preserves existing working consultation form.
+-- 5. NARROWLY SCOPED INSERT POLICY with data size limits
+-- Allows public submissions but limits length to prevent DB bloat/DoS
 CREATE POLICY "Allow anonymous patient consultation submissions" 
 ON public.consultations 
 FOR INSERT 
 TO anon, authenticated
 WITH CHECK (
-  length(trim(name)) > 0 AND 
-  length(trim(phone)) > 0
+  length(trim(name)) >= 2 AND length(trim(name)) <= 120 AND 
+  length(trim(phone)) >= 5 AND length(trim(phone)) <= 35 AND
+  (message IS NULL OR length(message) <= 4000)
 );
 
 -- 6. STRICT PRIVATE SELECT POLICY for patient dashboard
 -- Authenticated users can ONLY view their OWN consultation records.
--- Matches by either their user_id OR their verified login email.
 -- Under NO circumstances can any patient see another patient's consultations.
+-- To prevent email-squatting IDOR, matching unlinked consultations requires verified email in auth token.
 CREATE POLICY "Users can view own consultations" 
 ON public.consultations 
 FOR SELECT 
 TO authenticated
 USING (
   (user_id IS NOT NULL AND user_id = auth.uid()) OR
-  (lower(trim(email)) = lower(trim(auth.jwt() ->> 'email')))
+  (
+    user_id IS NULL AND
+    COALESCE((auth.jwt() ->> 'email_verified')::boolean, FALSE) IS TRUE AND
+    lower(trim(email)) = lower(trim(auth.jwt() ->> 'email'))
+  )
 );
 
--- 7. User Profiles Table (Linked to Supabase Auth)
+-- 7. Controlled UPDATE policy: Allows verified patients to link their past unlinked consultations
+CREATE POLICY "Users can claim own unlinked consultations" 
+ON public.consultations 
+FOR UPDATE 
+TO authenticated
+USING (
+  user_id IS NULL AND
+  COALESCE((auth.jwt() ->> 'email_verified')::boolean, FALSE) IS TRUE AND
+  lower(trim(email)) = lower(trim(auth.jwt() ->> 'email'))
+)
+WITH CHECK (
+  user_id = auth.uid()
+);
+
+-- 8. User Profiles Table (Linked to Supabase Auth)
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
@@ -103,7 +124,7 @@ FOR INSERT
 TO authenticated 
 WITH CHECK (auth.uid() = id);
 
--- 8. Auto-create or sync profile on new user signup trigger
+-- 9. Auto-create or sync profile on new user signup trigger
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -126,13 +147,13 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- 9. Grant appropriate privileges to Postgres roles
-GRANT INSERT ON TABLE public.consultations TO anon, authenticated;
-GRANT SELECT ON TABLE public.consultations TO authenticated;
+-- 10. Grant appropriate privileges to Postgres roles
+GRANT INSERT, SELECT, UPDATE ON TABLE public.consultations TO authenticated;
+GRANT INSERT ON TABLE public.consultations TO anon;
 GRANT ALL ON TABLE public.consultations TO service_role;
 GRANT ALL ON TABLE public.profiles TO authenticated;
 GRANT ALL ON TABLE public.profiles TO service_role;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 
--- 10. Notify PostgREST to reload schema cache
+-- 11. Notify PostgREST to reload schema cache
 NOTIFY pgrst, 'reload schema';

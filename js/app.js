@@ -386,12 +386,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function handleFiles(files) {
     uploadedFiles = Array.from(files);
     if (!fileListEl) return;
     fileListEl.innerHTML = uploadedFiles.map(f => {
       const sizeKb = Math.round(f.size / 1024);
-      return `<div>📎 ${f.name} (${sizeKb} KB)</div>`;
+      return `<div>📎 ${escapeHtml(f.name)} (${sizeKb} KB)</div>`;
     }).join('');
   }
 

@@ -8,6 +8,17 @@
   const DEFAULT_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
   const DEFAULT_ANON_KEY = 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
 
+  function isTrustedSupabaseUrl(urlStr) {
+    if (!urlStr || typeof urlStr !== 'string') return false;
+    try {
+      const u = new URL(urlStr);
+      return (u.protocol === 'https:' || u.protocol === 'http:') &&
+        (u.hostname.endsWith('.supabase.co') || u.hostname === 'localhost' || u.hostname === '127.0.0.1');
+    } catch (e) {
+      return false;
+    }
+  }
+
   function normalizeUrl(rawUrl) {
     if (!rawUrl || typeof rawUrl !== 'string') return DEFAULT_URL;
     let url = rawUrl.trim().replace(/^["']|["']$/g, '');
@@ -19,9 +30,10 @@
     }
     try {
       const parsed = new URL(url);
-      return parsed.origin;
+      const origin = parsed.origin;
+      return isTrustedSupabaseUrl(origin) ? origin : DEFAULT_URL;
     } catch (e) {
-      return url.replace(/\/rest\/v1\/?.*$/i, '').replace(/\/auth\/v1\/?.*$/i, '').replace(/\/+$/, '');
+      return DEFAULT_URL;
     }
   }
 
@@ -146,12 +158,17 @@
     getClient: getClient,
 
     setCredentials: function(newUrl, newKey) {
-      if (newUrl && typeof newUrl === 'string') config.url = newUrl.trim();
-      if (newKey && typeof newKey === 'string') config.key = newKey.trim();
-      try {
-        if (newUrl) localStorage.setItem('MEDMOST_SUPABASE_URL', config.url);
-        if (newKey) localStorage.setItem('MEDMOST_SUPABASE_KEY', config.key);
-      } catch (e) {}
+      if (newUrl && typeof newUrl === 'string') {
+        const normalized = normalizeUrl(newUrl);
+        if (isTrustedSupabaseUrl(normalized)) {
+          config.url = normalized;
+          try { localStorage.setItem('MEDMOST_SUPABASE_URL', config.url); } catch (e) {}
+        }
+      }
+      if (newKey && typeof newKey === 'string' && isKeyConfigured(newKey)) {
+        config.key = newKey.trim();
+        try { localStorage.setItem('MEDMOST_SUPABASE_KEY', config.key); } catch (e) {}
+      }
       initSupabaseClient();
       return this.getConfig();
     },
@@ -420,25 +437,40 @@
         }
       }
 
-      // 3. Always store in local storage for zero data loss & offline review
+      // 3. Store minimal non-sensitive reference metadata locally (NO confidential medical notes, phone numbers, or uploaded reports)
       try {
         const existing = JSON.parse(localStorage.getItem('medmost_enquiries') || '[]');
-        existing.unshift(payload);
+        const safeRecord = {
+          reference_id: referenceId,
+          created_at: payload.created_at,
+          treatment: payload.treatment || 'Medical Consultation',
+          hospital: payload.hospital || 'Top Accredited Hospital',
+          status: payload.status
+        };
+        existing.unshift(safeRecord);
+        // Keep at most 20 recent references
+        if (existing.length > 20) existing.length = 20;
         localStorage.setItem('medmost_enquiries', JSON.stringify(existing));
       } catch (storageErr) {
-        console.error('LocalStorage error:', storageErr);
+        console.error('LocalStorage notice:', storageErr);
       }
 
       return {
         success: true,
         referenceId: referenceId,
         serverSynced: serverSuccess,
-        data: payload
+        data: {
+          reference_id: referenceId,
+          created_at: payload.created_at,
+          treatment: payload.treatment,
+          hospital: payload.hospital,
+          status: payload.status
+        }
       };
     },
 
     /**
-     * Retrieve consultations for the current user (from Supabase or local storage)
+     * Retrieve consultations for the current user (from Supabase or local reference tracking)
      */
     getUserConsultations: async function() {
       const user = await this.getCurrentUser();
@@ -450,7 +482,7 @@
           // Select user's own consultations via Supabase RLS
           const { data, error } = await client
             .from('consultations')
-            .select('*')
+            .select('id, created_at, name, country, message, user_id')
             .order('created_at', { ascending: false });
 
           if (!error && Array.isArray(data) && data.length > 0) {
@@ -461,22 +493,18 @@
         }
       }
 
-      // Merge with local enquiries for complete continuity
+      // If database consultations are loaded, prioritize them
+      if (consultations.length > 0) {
+        return consultations;
+      }
+
+      // Otherwise fall back to local non-sensitive reference records
       try {
         const local = JSON.parse(localStorage.getItem('medmost_enquiries') || '[]');
-        if (user && user.email) {
-          const matchedLocal = local.filter(l => l.email && l.email.toLowerCase() === user.email.toLowerCase());
-          matchedLocal.forEach(item => {
-            if (!consultations.some(c => c.reference_id === item.reference_id || (c.created_at && c.created_at === item.created_at))) {
-              consultations.push(item);
-            }
-          });
-        } else if (consultations.length === 0) {
-          consultations = local;
-        }
-      } catch (e) {}
-
-      return consultations;
+        return Array.isArray(local) ? local : [];
+      } catch (e) {
+        return [];
+      }
     }
   };
 

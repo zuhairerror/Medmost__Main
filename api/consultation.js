@@ -2,58 +2,96 @@
  * MEDMOST - Node.js Serverless API Endpoint for Supabase
  * Runtime: Node.js (Vercel Serverless Function)
  * Route: /api/consultation
+ * Hardened with:
+ * - Strict CORS whitelist
+ * - IP Sliding-window Rate Limiting
+ * - Bot honeypot protection
+ * - Strict input validation & sanitization
+ * - Safe generic error handling (no DB error disclosure)
  */
 
 const { createClient } = require('@supabase/supabase-js');
 
-// Default project URL from user's Supabase dashboard
 const DEFAULT_SUPABASE_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
 
-/**
- * Normalizes and validates the Supabase Project URL.
- * Ensures it is the base origin ending in .supabase.co (e.g. https://xyz.supabase.co)
- * and strips any accidentally included path segments (such as /rest/v1 or trailing slashes)
- * that cause PostgREST PGRST125 ("Invalid path specified in request URL") errors.
- */
+// In-memory sliding window rate limiter for submissions
+const submissionRateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_SUBMISSIONS_PER_WINDOW = 6;
+
+function checkSubmissionRateLimit(ip) {
+  const now = Date.now();
+  const clientData = submissionRateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
+
+  if (now > clientData.resetTime) {
+    clientData.count = 1;
+    clientData.resetTime = now + RATE_LIMIT_WINDOW_MS;
+  } else {
+    clientData.count += 1;
+  }
+  submissionRateLimitMap.set(ip, clientData);
+
+  // Prune map if too large
+  if (submissionRateLimitMap.size > 5000) {
+    for (const [key, val] of submissionRateLimitMap.entries()) {
+      if (now > val.resetTime) submissionRateLimitMap.delete(key);
+    }
+  }
+
+  return clientData.count <= MAX_SUBMISSIONS_PER_WINDOW;
+}
+
 function cleanSupabaseUrl(rawUrl) {
   if (!rawUrl || typeof rawUrl !== 'string') return DEFAULT_SUPABASE_URL;
   let url = rawUrl.trim().replace(/^["']|["']$/g, '');
   if (!url) return DEFAULT_SUPABASE_URL;
 
-  // Auto-correct common transposition typo (kpzghk -> kpzgkh)
   url = url.replace('kpzghkicelbfjuairebt', 'kpzgkhicelbfjuairebt');
 
-  // Add protocol if missing
   if (!/^https?:\/\//i.test(url)) {
     url = 'https://' + url;
   }
 
   try {
     const parsed = new URL(url);
-    // Project URL must only be protocol + host (origin), without /rest/v1 path
     return parsed.origin;
   } catch (e) {
     return url.replace(/\/rest\/v1\/?.*$/i, '').replace(/\/+$/, '');
   }
 }
 
-/**
- * Cleans and trims the Supabase API Key, removing accidental quotes or spaces
- */
 function cleanApiKey(rawKey) {
   if (!rawKey || typeof rawKey !== 'string') return '';
   return rawKey.trim().replace(/^["']|["']$/g, '');
 }
 
+function sanitizeText(str, maxLength = 200) {
+  if (!str || typeof str !== 'string') return '';
+  // Strip null bytes and non-printable control characters (except newline/tab)
+  const cleaned = str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+  return cleaned.slice(0, maxLength);
+}
+
+function isOriginAllowed(origin) {
+  if (!origin) return true; // Same-origin request
+  const allowed = [
+    'https://www.medmost.in',
+    'https://medmost.in'
+  ];
+  if (allowed.includes(origin)) return true;
+  if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) return true;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) return true;
+  return false;
+}
+
 module.exports = async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  const reqOrigin = req.headers && req.headers.origin ? req.headers.origin : '';
+  const originHeader = isOriginAllowed(reqOrigin) ? (reqOrigin || 'https://www.medmost.in') : 'https://www.medmost.in';
+
+  res.setHeader('Access-Control-Allow-Origin', originHeader);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With');
+  res.setHeader('Vary', 'Origin');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -62,75 +100,113 @@ module.exports = async function handler(req, res) {
 
   // Health check on GET
   if (req.method === 'GET') {
-    const activeUrl = cleanSupabaseUrl(process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL);
     return res.status(200).json({
       status: 'online',
-      service: 'MEDMOST Node.js Supabase API',
-      configuredProjectUrl: activeUrl,
+      service: 'MEDMOST Node.js Consultation API',
       timestamp: new Date().toISOString()
     });
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+    return res.status(405).json({ success: false, error: 'Method not allowed. Use POST.' });
+  }
+
+  // Extract client IP
+  const clientIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown')
+    .split(',')[0].trim();
+
+  // Rate Limiting
+  if (!checkSubmissionRateLimit(clientIp)) {
+    return res.status(429).json({
+      success: false,
+      error: 'Submission limit reached. Please wait a few minutes before submitting another consultation.'
+    });
   }
 
   try {
-    // Parse body safely whether parsed by Vercel or raw string
     let payload = req.body;
     if (typeof payload === 'string') {
       try {
         payload = JSON.parse(payload);
       } catch (parseErr) {
-        payload = {};
+        return res.status(400).json({ success: false, error: 'Invalid JSON payload format.' });
       }
     }
     payload = payload || {};
 
-    const {
-      full_name,
-      country,
-      phone,
-      email,
-      treatment,
-      city,
-      message,
-      source
-    } = payload;
-
-    const patientName = (full_name || payload.name || '').toString().trim();
-    const patientPhone = (phone || '').toString().trim();
-
-    // Basic validation
-    if (!patientName || !patientPhone) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: name and phone are mandatory.'
+    // Anti-bot honeypot check (hidden fields that users will not fill)
+    if (payload._hp || payload.website_hp || payload.company_hp) {
+      console.warn(`[BOT DETECTED] Honeypot triggered from IP ${clientIp}`);
+      // Silently return fake success so bots do not retry with alternate vectors
+      return res.status(200).json({
+        success: true,
+        referenceId: 'MM-HP-' + Math.floor(100000 + Math.random() * 900000),
+        message: 'Enquiry received.'
       });
     }
 
-    // Clean and validate Supabase URL & Key
+    const rawName = payload.full_name || payload.name || '';
+    const rawPhone = payload.phone || '';
+    const rawEmail = payload.email || '';
+    const rawCountry = payload.country || '';
+    const rawTreatment = payload.treatment || '';
+    const rawCity = payload.city || '';
+    const rawMessage = payload.message || '';
+    const rawSource = payload.source || '';
+
+    // Sanitize inputs
+    const patientName = sanitizeText(rawName, 100);
+    const patientPhone = sanitizeText(rawPhone, 30);
+    const patientEmail = sanitizeText(rawEmail, 150);
+    const patientCountry = sanitizeText(rawCountry, 80) || 'Unspecified';
+    const patientTreatment = sanitizeText(rawTreatment, 120);
+    const patientCity = sanitizeText(rawCity, 80);
+    const patientMessage = sanitizeText(rawMessage, 2500);
+    const patientSource = sanitizeText(rawSource, 60);
+
+    // Validation
+    if (!patientName || patientName.length < 2) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide a valid patient name (at least 2 characters).'
+      });
+    }
+
+    // Phone validation (numbers, spaces, +, -, parentheses; between 6 and 25 characters)
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{5,20}$/;
+    if (!patientPhone || !phoneRegex.test(patientPhone.replace(/\s+/g, ''))) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide a valid contact telephone number.'
+      });
+    }
+
+    // Email format validation if provided
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (patientEmail && !emailRegex.test(patientEmail)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide a valid email address.'
+      });
+    }
+
+    // Supabase credentials
     const supabaseUrl = cleanSupabaseUrl(process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL);
-    // Prioritize SUPABASE_SERVICE_ROLE_KEY (server-side only on Vercel, safely bypasses RLS)
-    // Fall back to SUPABASE_ANON_KEY (evaluated against the narrow INSERT RLS policy)
     const supabaseKey = cleanApiKey(
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
       process.env.SUPABASE_ANON_KEY ||
       process.env.SUPABASE_KEY
     );
 
-    // Check if Supabase key is configured in Vercel
     if (!supabaseKey) {
-      console.warn('SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY environment variable is not configured yet in Vercel.');
+      console.warn('SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY is not configured yet in Vercel.');
       return res.status(200).json({
         success: true,
         referenceId: 'DEMO-' + Math.floor(100000 + Math.random() * 900000),
-        message: 'Enquiry received in Node.js backend. (Configure Supabase keys in Vercel to save to live database)',
-        data: { name: patientName, phone: patientPhone, treatment, country }
+        message: 'Enquiry received in Node.js backend. (Configure Supabase keys in Vercel to save to live database)'
       });
     }
 
-    // Initialize Supabase Client with normalized base URL
     const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: {
         persistSession: false,
@@ -138,47 +214,36 @@ module.exports = async function handler(req, res) {
       }
     });
 
-    // Compile clinical details (treatment, preferred city, source) into the message column
-    // so no submitted patient detail is lost while strictly matching existing database columns
     const messageParts = [];
-    if (treatment && treatment.toString().trim()) {
-      messageParts.push(`Treatment: ${treatment.toString().trim()}`);
+    if (patientTreatment) {
+      messageParts.push(`Treatment: ${patientTreatment}`);
     }
-    if (city && city.toString().trim() && city.toString().trim().toLowerCase() !== 'unspecified') {
-      messageParts.push(`Preferred City: ${city.toString().trim()}`);
+    if (patientCity && patientCity.toLowerCase() !== 'unspecified') {
+      messageParts.push(`Preferred City: ${patientCity}`);
     }
-    if (source && source.toString().trim() && source.toString().trim().toLowerCase() !== 'website') {
-      messageParts.push(`Lead Source: ${source.toString().trim()}`);
+    if (patientSource && patientSource.toLowerCase() !== 'website') {
+      messageParts.push(`Lead Source: ${patientSource}`);
     }
-    if (message && message.toString().trim()) {
-      messageParts.push(`Notes: ${message.toString().trim()}`);
+    if (patientMessage) {
+      messageParts.push(`Notes: ${patientMessage}`);
     }
 
     const compiledMessage = messageParts.length > 0 
       ? messageParts.join(' | ') 
-      : ((message && message.toString().trim()) || 'Website consultation enquiry');
+      : (patientMessage || 'Website consultation enquiry');
 
-    // Construct consultation record matching the existing public.consultations table:
-    // Columns: name, email, phone, country, message (id and created_at are generated by DB)
-    // NOTE: Non-existent columns (city, treatment, source, status) are omitted to avoid PGRST204 errors.
     const consultationRecord = {
       name: patientName,
-      email: (email || '').toString().trim() || 'not-provided@medmost.org',
+      email: patientEmail || 'not-provided@medmost.org',
       phone: patientPhone,
-      country: (country || '').toString().trim() || 'Unspecified',
+      country: patientCountry,
       message: compiledMessage
     };
 
-    // Insert consultation record into public.consultations table
-    // NOTE: We intentionally omit .select()!
-    // Chaining .select() sends "Prefer: return=representation", which requires a SELECT RLS policy.
-    // For anonymous consultation submissions, public SELECT is forbidden to protect patient privacy.
-    // Without .select(), Supabase performs a minimal return ("return=minimal"), requiring ONLY the INSERT RLS policy.
     let { error } = await supabase
       .from('consultations')
       .insert([consultationRecord]);
 
-    // Fallback: If 'name' is reported missing in the schema cache, retry once with 'full_name'
     if (error && error.code === 'PGRST204' && typeof error.message === 'string' && error.message.includes("'name'")) {
       const fallbackRecord = {
         full_name: patientName,
@@ -190,27 +255,19 @@ module.exports = async function handler(req, res) {
       const retryResult = await supabase
         .from('consultations')
         .insert([fallbackRecord]);
-      if (!retryResult.error) {
-        error = null;
-      } else {
-        error = retryResult.error;
-      }
+      error = retryResult.error;
     }
 
     if (error) {
+      // Secure logging server-side; NEVER leak internal DB errors or hints to the client
       console.error('Supabase insert error details:', {
         code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
+        message: error.message
       });
 
       return res.status(500).json({
         success: false,
-        code: error.code || 'PGRST_ERROR',
-        error: error.message,
-        details: error.details || null,
-        hint: error.hint || 'Verify table exists in Supabase public schema and RLS INSERT policy is configured.'
+        error: 'Unable to save consultation record. Please try again or reach out directly on WhatsApp.'
       });
     }
 
@@ -219,14 +276,13 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       success: true,
       referenceId: referenceId,
-      message: 'Consultation enquiry saved successfully to Supabase database!',
-      record: consultationRecord
+      message: 'Consultation enquiry saved successfully!'
     });
   } catch (err) {
-    console.error('Unexpected server error:', err);
+    console.error('Unexpected server error processing consultation:', err);
     return res.status(500).json({
       success: false,
-      error: err.message || 'Internal server error'
+      error: 'An internal error occurred. Please try again later.'
     });
   }
 };

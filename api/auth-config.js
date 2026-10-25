@@ -8,6 +8,33 @@
 const DEFAULT_SUPABASE_URL = 'https://kpzgkhicelbfjuairebt.supabase.co';
 const DEFAULT_ANON_KEY = '';
 
+// In-memory sliding window rate limiter
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 60;
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const clientData = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
+
+  if (now > clientData.resetTime) {
+    clientData.count = 1;
+    clientData.resetTime = now + RATE_LIMIT_WINDOW_MS;
+  } else {
+    clientData.count += 1;
+  }
+  rateLimitMap.set(ip, clientData);
+
+  // Prune map if too large
+  if (rateLimitMap.size > 5000) {
+    for (const [key, val] of rateLimitMap.entries()) {
+      if (now > val.resetTime) rateLimitMap.delete(key);
+    }
+  }
+
+  return clientData.count <= MAX_REQUESTS_PER_WINDOW;
+}
+
 /**
  * Normalizes the Supabase URL to ensure it is the clean origin ending in .supabase.co
  * and removes any accidental path segments (such as /rest/v1 or trailing slashes)
@@ -41,12 +68,28 @@ function cleanApiKey(rawKey) {
   return cleaned || DEFAULT_ANON_KEY;
 }
 
+function isOriginAllowed(origin) {
+  if (!origin) return true; // Direct/same-origin navigation
+  const allowed = [
+    'https://www.medmost.in',
+    'https://medmost.in'
+  ];
+  if (allowed.includes(origin)) return true;
+  // Allow Vercel preview deploys
+  if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) return true;
+  // Allow local development
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) return true;
+  return false;
+}
+
 module.exports = async function handler(req, res) {
-  // CORS configuration that complies with strict browser security
-  const origin = req.headers && req.headers.origin ? req.headers.origin : '*';
-  res.setHeader('Access-Control-Allow-Origin', origin);
+  const reqOrigin = req.headers && req.headers.origin ? req.headers.origin : '';
+  const originHeader = isOriginAllowed(reqOrigin) ? (reqOrigin || 'https://www.medmost.in') : 'https://www.medmost.in';
+
+  res.setHeader('Access-Control-Allow-Origin', originHeader);
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
+  res.setHeader('Vary', 'Origin');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -55,6 +98,13 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed. Use GET.' });
+  }
+
+  // Rate limiting by client IP
+  const clientIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown')
+    .split(',')[0].trim();
+  if (!checkRateLimit(clientIp)) {
+    return res.status(429).json({ error: 'Too many requests. Please wait a moment.' });
   }
 
   const supabaseUrl = cleanSupabaseUrl(process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL);

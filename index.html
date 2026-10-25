@@ -3371,6 +3371,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     <div class="modal-body">
       <div id="formFieldsView">
         <form id="applicationForm">
+          <!-- Anti-bot honeypot field (hidden from legitimate users) -->
+          <input type="text" id="applyHoneypot" name="_hp" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;pointer-events:none;" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-group">
             <label class="form-label" for="applyName">
               <span class="en">Patient Full Name *</span>
@@ -4044,14 +4046,34 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     });
   });
 
-  // File upload preview
+  // Security helper: HTML entity encoding to prevent XSS
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Security helper: Password complexity enforcement (min 8 chars, uppercase, lowercase, numbers/symbols)
+  function isStrongPassword(pwd) {
+    if (!pwd || pwd.length < 8) return false;
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasLower = /[a-z]/.test(pwd);
+    const hasDigitOrSpecial = /[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd);
+    return hasUpper && hasLower && hasDigitOrSpecial;
+  }
+
+  // File upload preview (sanitized against DOM XSS)
   const fileInput = document.getElementById('medicalReportsInput');
   if (fileInput) {
     fileInput.addEventListener('change', () => {
       const listEl = document.getElementById('fileListPreview');
       if (!listEl) return;
       const files = Array.from(fileInput.files);
-      listEl.innerHTML = files.map(f => '<div>📎 ' + f.name + ' (' + Math.round(f.size/1024) + ' KB)</div>').join('');
+      listEl.innerHTML = files.map(f => '<div>📎 ' + escapeHtml(f.name) + ' (' + Math.round(f.size/1024) + ' KB)</div>').join('');
     });
   }
 
@@ -4072,6 +4094,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       const hospital = document.getElementById('applyHospitalSelect').value;
       const message = document.getElementById('applyMessage').value.trim();
       const consent = document.getElementById('applyConsent').checked;
+      const hpField = document.getElementById('applyHoneypot');
+      const hp = hpField ? hpField.value : '';
 
       if (!name || !phone || !country || !consent) {
         alert(isRu ? 'Пожалуйста, заполните имя пациента, телефон, выберите страну и подтвердите согласие.' : 'Please enter patient name, phone number, select country and accept consent.');
@@ -4082,7 +4106,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       submitBtn.innerHTML = isRu ? '⏳ Отправка заявки...' : '⏳ Submitting Application...';
 
       const enquiryData = {
-        name, phone, email, country, treatment, hospital, message, consent
+        name, phone, email, country, treatment, hospital, message, consent, _hp: hp
       };
 
       try {
@@ -4238,8 +4262,10 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       return;
     }
 
-    if (password.length < 6) {
-      showAuthBanner(isRu ? 'Пароль должен содержать не менее 6 символов.' : 'Password must be at least 6 characters long.', 'error');
+    if (!isStrongPassword(password)) {
+      showAuthBanner(isRu 
+        ? 'Пароль должен содержать минимум 8 символов, включая заглавные и строчные буквы, а также цифры.' 
+        : 'Password must be at least 8 characters long and contain uppercase, lowercase letters, and numbers/symbols.', 'error');
       return;
     }
 
@@ -4340,8 +4366,10 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     const confirmPassword = document.getElementById('updateConfirmPassword') ? document.getElementById('updateConfirmPassword').value : newPassword;
     const submitBtn = document.getElementById('updatePasswordSubmitBtn');
 
-    if (!newPassword || newPassword.length < 6) {
-      showAuthBanner(isRu ? 'Пароль должен содержать не менее 6 символов.' : 'Password must be at least 6 characters long.', 'error');
+    if (!newPassword || !isStrongPassword(newPassword)) {
+      showAuthBanner(isRu 
+        ? 'Пароль должен содержать минимум 8 символов, включая заглавные и строчные буквы, а также цифры.' 
+        : 'Password must be at least 8 characters long and contain uppercase, lowercase letters, and numbers/symbols.', 'error');
       return;
     }
 
@@ -4455,10 +4483,15 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       }
 
       container.innerHTML = records.map(r => {
-        const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString() : 'Recent';
-        const ref = r.reference_id || ('MM-' + (r.id || '2026'));
-        const treatmentName = r.treatment || 'Medical Consultation';
-        const hospitalName = r.hospital || 'Top Accredited Hospital';
+        const rawDate = r.created_at ? new Date(r.created_at).toLocaleDateString() : 'Recent';
+        const rawRef = r.reference_id || ('MM-' + (r.id || '2026'));
+        const rawTreatment = r.treatment || 'Medical Consultation';
+        const rawHospital = r.hospital || 'Top Accredited Hospital';
+        
+        const dateStr = escapeHtml(rawDate);
+        const ref = escapeHtml(rawRef);
+        const treatmentName = escapeHtml(rawTreatment);
+        const hospitalName = escapeHtml(rawHospital);
         const isSynced = r.status === 'synced_to_supabase' || r.status === 'synced_to_server';
 
         return `
