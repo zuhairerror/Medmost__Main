@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /*.ico$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.svg$
+Allow: /*.webp$
+
+Sitemap: https://www.medmost.in/sitemap.xml
